@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from django.http import HttpResponse
 from django.http import JsonResponse
+from frontend.models import number
 
 # Create your views here.
 def index(request):
@@ -16,5 +17,7 @@ def tables(request):
     return render(request, 'website/tables.html')
 
 def search_ajax(request):
-    ret=[12,11,10,9,8,7,6,5,4,3,2,1]
+    ret=[]
+    for n in number.objects.all():
+        ret.append(n.value)
     return JsonResponse(ret,safe=False)
