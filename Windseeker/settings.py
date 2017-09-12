@@ -76,8 +76,11 @@ WSGI_APPLICATION = 'Windseeker.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'Windseeker',
+        'USER': 'root',
+        'PASSWORD': 'mysql81620861',
+        'HOST': '127.0.0.1',
     }
 }
 
