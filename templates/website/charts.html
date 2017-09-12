@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+
+		{%block charts_active%}
+		active
+		{%endblock charts_active%}
+
+		<!-- MAIN -->
+		{% block main %}
+		<div class="main">
+			<!-- MAIN CONTENT -->
+			<div class="main-content">
+				<div class="container-fluid">
+					<h3 class="page-title">图表</h3>
+					<button type="button" class="btn btn-default" id="search">查询</button>
+					<div class="row">
+						<div class="col-md-6">
+							<div class="panel">
+								<div class="panel-heading">
+									<h3 class="panel-title">折线图</h3>
+								</div>
+								<div class="panel-body">
+									<div id="demo-line-chart" class="ct-chart"></div>
+								</div>
+							</div>
+						</div>
+
+					</div>
+
+				</div>
+			</div>
+			<!-- END MAIN CONTENT -->
+		</div>
+		{% endblock main %}
+		<!-- END MAIN -->
+	{% block function %}
+	<script>
+	$(function() {
+		var options;
+
+		var data = {
+			labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+			series: [
+				[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+			]
+		};
+			
+
+		// line chart
+		options = {
+			height: "300px",
+			showPoint: true,
+		};
+		
+
+		var chart=new Chartist.Line('.ct-chart', data);
+		
+		$("#search").click(function(){
+			$.getJSON("{% url 'search_ajax' %}",function(ret){
+			for(var i=0;i<ret.length;i++)
+			{
+				data.series[0][i]=ret[i];
+			}
+			chart.update(data);
+			});
+		});
+
+	});
+	</script>
+	{% endblock function %}
