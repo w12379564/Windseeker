@@ -1,3 +1,3 @@
 # Windseeker
 
-website for wind prediction.
+Website for wind prediction.
