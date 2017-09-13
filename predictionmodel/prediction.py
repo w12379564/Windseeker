@@ -14,10 +14,10 @@ def train(x_train,y_train):
 
     for name, estimator in ESTIMATORS.items():
         regr=estimator.fit(x_train, y_train)
-        joblib.dump(regr,'model/'+name+'.model')
+        joblib.dump(regr,'predictionmodel/model/'+name+'.model')
 
 def predict(name,x_test):
-    estimator = joblib.load('model/' + name + '.model')
+    estimator = joblib.load('predictionmodel/model/' + name + '.model')
     return estimator.predict(x_test)
 
 def mixPredict(x_train,y_train,x_test,c1=0.5,c2=0.5):
