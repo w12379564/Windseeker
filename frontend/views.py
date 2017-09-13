@@ -26,5 +26,5 @@ def search_ajax(request):
     y_predict = predict('knn',x_test[id])
     ret.append(y_target[id].tolist())
     ret.append(y_predict[0].tolist())
-    print(ret)
+    #print(ret)
     return JsonResponse(ret,safe=False)
