@@ -6,7 +6,7 @@ from frontend.models import number
 # Create your views here.
 def index(request):
     return render(request, 'website/index.html', context={
-                      'title': '命运石之门的选择',
+                      'title': 'Windseeker',
                       'welcome': 'Welcome to Steins;Gate'
                   })
 
