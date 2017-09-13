@@ -9,3 +9,7 @@ class weathertest(models.Model):
     dir = models.CharField(max_length=50)
     windspeed = models.FloatField()
     condition = models.CharField(max_length=50)
+
+class resulttest(models.Model):
+    time = models.DateTimeField(primary_key=True)
+    y_predict = models.FloatField()

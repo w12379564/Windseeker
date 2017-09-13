@@ -9,9 +9,10 @@ from predictionmodel.dataPreprocess import db2dataset
 from predictionmodel.prediction import train,predict,check
 import matplotlib.pyplot as plt
 from math import sqrt
+from sklearn.externals import joblib
 # Create your tests here.
 size=48
-data = db2dataset(size,1)
+data = db2dataset(size,0)
 
 x=data[:,size:]
 y=data[:,:size]
@@ -21,6 +22,10 @@ y_train=y[:-101,:]
 
 x_test=x[-100:,:]
 y_target=y[-100:,:]
+
+joblib.dump(x_test,'predictionmodel/data/'+'x_test.data')
+joblib.dump(y_target,'predictionmodel/data/'+'y_target.data')
+
 testsize=x_test.shape[0]
 figsize=int(sqrt(testsize))+1
 ESTIMATORS = ["extraTrees", "knn", "linearRegression","ridge"]
