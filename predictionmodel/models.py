@@ -12,4 +12,4 @@ class weathertest(models.Model):
 
 class resulttest(models.Model):
     time = models.DateTimeField(primary_key=True)
-    y_predict = models.FloatField()
+    windspeed = models.FloatField()

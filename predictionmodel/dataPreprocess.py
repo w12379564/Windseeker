@@ -30,14 +30,14 @@ def file2dataset(filename,size,shuffleornot):
     if shuffleornot==1: np.random.shuffle(data)
     return data
 
-def db2dataset(size,shuffleornot):
+def db2dataset(size,begtime,endtime):
     count = 0
     temp = []
     hum = []
     press = []
     wd = []
     rawdata = []
-    for record in weathertest.objects.all():
+    for record in weathertest.objects.filter(time__gte = begtime).filter(time__lte = endtime):
         temp.append(record.temp)
         hum.append(record.hum)
         press.append(record.press)
@@ -52,5 +52,4 @@ def db2dataset(size,shuffleornot):
             count = 0
 
     data = np.array(rawdata)
-    if shuffleornot==1: np.random.shuffle(data)
     return data

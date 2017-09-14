@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from django.http import JsonResponse
 from datetime import datetime
-from predictionmodel.dataQuery import getrealBytime
+from predictionmodel.dataQuery import getrealBytime,getpredictBytime
 
 # Create your views here.
 def index(request):
@@ -23,7 +23,8 @@ def search_ajax(request):
     endtime = datetime.strptime(end,'%Y/%m/%d %H:%M')
     print(begtime)
     print(endtime)
-
-    ret = getrealBytime(begtime,endtime)
+    ret = []
+    ret.append(getrealBytime(begtime,endtime))
+    ret.append(getpredictBytime(begtime, endtime))
     print(ret)
     return JsonResponse(ret,safe=False)

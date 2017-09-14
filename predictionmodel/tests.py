@@ -12,12 +12,7 @@ from math import sqrt
 from sklearn.externals import joblib
 from datetime import datetime,timedelta
 import predictionmodel.getData
+from predictionmodel.task import predictTask
 # Create your tests here.
 
-test=predictionmodel.getData.weatherHis()
-today = datetime.today()
-print(today)
-yesterday = today - timedelta(days=1)
-print(yesterday)
-data = test.getDaydata(yesterday)
-print(data)
+predictTask()
