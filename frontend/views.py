@@ -1,9 +1,7 @@
 from django.shortcuts import render
-from django.http import HttpResponse
 from django.http import JsonResponse
-from frontend.models import number
-from predictionmodel.prediction import predict
-from sklearn.externals import joblib
+from datetime import datetime
+from predictionmodel.dataQuery import getrealBytime
 
 # Create your views here.
 def index(request):
@@ -19,12 +17,13 @@ def tables(request):
     return render(request, 'website/tables.html')
 
 def search_ajax(request):
-    id=int(request.GET['a'])
-    ret=[]
-    x_test = joblib.load('predictionmodel/data/'+'x_test.data')
-    y_target = joblib.load('predictionmodel/data/'+'y_target.data')
-    y_predict = predict('knn',x_test[id])
-    ret.append(y_target[id].tolist())
-    ret.append(y_predict[0].tolist())
-    #print(ret)
+    beg=request.GET.get('beg',0)
+    end=request.GET.get('end',0)
+    begtime = datetime.strptime(beg,'%Y/%m/%d %H:%M')
+    endtime = datetime.strptime(end,'%Y/%m/%d %H:%M')
+    print(begtime)
+    print(endtime)
+
+    ret = getrealBytime(begtime,endtime)
+    print(ret)
     return JsonResponse(ret,safe=False)
