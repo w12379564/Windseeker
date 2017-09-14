@@ -3,6 +3,7 @@ import urllib.request as urllib2
 import urllib
 import re
 from datetime import datetime
+from predictionmodel.models import weathertest
 
 class weatherHis:
     def __init__(self):
@@ -67,13 +68,13 @@ class weatherHis:
             timeAM = re.search(r'(.*?)AM',hourlyData[index[0]])
             timePM = re.search(r'(.*?)PM', hourlyData[index[0]])
             if timeAM:
-                hourlyData[0]=self.title+'-'+re.sub(r'12',"00",timeAM.group(1))
+                hourlyData[0]=self.title+' '+re.sub(r'12',"00",timeAM.group(1))
             if timePM:
                 sp=timePM.group().split(':')
                 hour=int(sp[0])
                 if hour!=12:
                     hour+=12
-                hourlyData[0]=self.title+'-'+str(hour)+':'+sp[1][:-2]
+                hourlyData[0]=self.title+' '+str(hour)+':'+sp[1][:-2]
             hourlyData[index[2]]=re.sub(r'%',"",hourlyData[index[2]])
             #print hourlyData
             dayDataNew.append([hourlyData[i] for i in index])
@@ -85,4 +86,6 @@ class weatherHis:
         page = self.getPage(datestr)
         (dataRaw, index) = self.getContent(page)
         data = self.dataProcess(dataRaw, index)
-        
+        for record in data:
+            newrecord = weathertest(time=record[0],temp=record[1],hum=record[2],press=record[3],dir=record[4],windspeed=record[5],condition=record[6])
+            newrecord.save()
