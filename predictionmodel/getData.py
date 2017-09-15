@@ -82,28 +82,38 @@ class weatherHis:
         return dayDataNew
 
     def dealwithMissing(self,dayData):
+
         if dayData == []:return []
-        timeindex = datetime(dayData[0][0].year,dayData[0][0].month,dayData[0][0].day,0,0)
+        begtime = datetime(dayData[0][0].year,dayData[0][0].month,dayData[0][0].day,0,0)
+        endtime = datetime(dayData[0][0].year,dayData[0][0].month,dayData[0][0].day,23,59)
+        timeindex = begtime
+
         l = len(dayData)
-        for i in range(l):
-            hourlyData = dayData[i]
-            if hourlyData[0] == timeindex:
+        i = 0
+        while timeindex<endtime:
+            if i >= l:
+                toInsert = dayData[l - 1][:]
+                toInsert[0] = timeindex
+                dayData.append(toInsert)
                 timeindex += timedelta(minutes=30)
-                continue
             else:
-                while timeindex != hourlyData[0]:
-                    if i == 0:
-                        toInsert = dayData[i+1][:]
-                        toInsert[0] = timeindex
-                        dayData.append(toInsert)
-                    else:
-                        toInsert = dayData[i-1][:]
-                        toInsert[0] = timeindex
-                        dayData.append(toInsert)
+                hourlyData = dayData[i]
+                if hourlyData[0] == timeindex:
                     timeindex += timedelta(minutes=30)
-                timeindex += timedelta(minutes=30)
+                    i += 1
+                    continue
+                else:
+                    if i == 0:
+                        toInsert = dayData[i + 1][:]
+                    else:
+                        toInsert = dayData[i - 1][:]
+                    toInsert[0] = timeindex
+                    dayData.append(toInsert)
+                    timeindex += timedelta(minutes=30)
+
         dayData = sorted(dayData,key=lambda hourly:hourly[0])
         return dayData
+
 
     def getDaydata(self,date):
         datestr = date.strftime('%Y/%m/%d')
