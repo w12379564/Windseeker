@@ -2,7 +2,7 @@
 import urllib.request as urllib2
 import urllib
 import re
-from datetime import datetime
+from datetime import datetime,timedelta
 from predictionmodel.models import weathertest
 
 class weatherHis:
@@ -68,17 +68,42 @@ class weatherHis:
             timeAM = re.search(r'(.*?)AM',hourlyData[index[0]])
             timePM = re.search(r'(.*?)PM', hourlyData[index[0]])
             if timeAM:
-                hourlyData[0]=self.title+' '+re.sub(r'12',"00",timeAM.group(1))
+                hourlyData[0] = datetime.strptime(self.title + ' ' + re.sub(r'12', "00", timeAM.group(1)),
+                                                  '%Y-%m-%d %H:%M')
             if timePM:
                 sp=timePM.group().split(':')
                 hour=int(sp[0])
                 if hour!=12:
                     hour+=12
-                hourlyData[0]=self.title+' '+str(hour)+':'+sp[1][:-2]
+                hourlyData[0] = datetime.strptime(self.title + ' ' + str(hour) + ':' + sp[1][:-2], '%Y-%m-%d %H:%M')
             hourlyData[index[2]]=re.sub(r'%',"",hourlyData[index[2]])
             #print hourlyData
             dayDataNew.append([hourlyData[i] for i in index])
         return dayDataNew
+
+    def dealwithMissing(self,dayData):
+        if dayData == []:return []
+        timeindex = datetime(dayData[0][0].year,dayData[0][0].month,dayData[0][0].day,0,0)
+        l = len(dayData)
+        for i in range(l):
+            hourlyData = dayData[i]
+            if hourlyData[0] == timeindex:
+                timeindex += timedelta(minutes=30)
+                continue
+            else:
+                while timeindex != hourlyData[0]:
+                    if i == 0:
+                        toInsert = dayData[i+1][:]
+                        toInsert[0] = timeindex
+                        dayData.append(toInsert)
+                    else:
+                        toInsert = dayData[i-1][:]
+                        toInsert[0] = timeindex
+                        dayData.append(toInsert)
+                    timeindex += timedelta(minutes=30)
+                timeindex += timedelta(minutes=30)
+        dayData = sorted(dayData,key=lambda hourly:hourly[0])
+        return dayData
 
     def getDaydata(self,date):
         datestr = date.strftime('%Y/%m/%d')
@@ -86,6 +111,7 @@ class weatherHis:
         page = self.getPage(datestr)
         (dataRaw, index) = self.getContent(page)
         data = self.dataProcess(dataRaw, index)
+        data = self.dealwithMissing(data)
         for record in data:
             newrecord = weathertest(time=record[0],temp=record[1],hum=record[2],press=record[3],dir=record[4],windspeed=record[5],condition=record[6])
             newrecord.save()
