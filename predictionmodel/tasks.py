@@ -1,3 +1,4 @@
+from __future__ import absolute_import, unicode_literals
 from predictionmodel.prediction import train,predict
 from predictionmodel.dataPreprocess import db2dataset
 from predictionmodel import getData
@@ -5,6 +6,8 @@ from datetime import datetime,timedelta
 from predictionmodel.models import resulttest
 import predictionmodel.getData
 from . import models
+from celery import shared_task
+
 
 def trainTask():
     size = 48
@@ -38,3 +41,7 @@ def predictTask():
         t = begtime + timedelta(hours=i/2.0)
         r = resulttest(time=t,windspeed=y[i])
         r.save()
+
+@shared_task
+def add(x, y):
+    print(x+y)
