@@ -3,6 +3,8 @@ from predictionmodel.dataPreprocess import db2dataset
 from predictionmodel import getData
 from datetime import datetime,timedelta
 from predictionmodel.models import resulttest
+import predictionmodel.getData
+from . import models
 
 def trainTask():
     size = 48
@@ -20,10 +22,18 @@ def predictTask():
     yesterday = today - timedelta(days=1)
     begtime = datetime(yesterday.year,yesterday.month,yesterday.day,0,0,0)
     endtime = datetime(yesterday.year,yesterday.month,yesterday.day,23,59,59)
-    data = db2dataset(size, datetime.min, endtime)
-    x = data[-size:, size:]
+
+    q = models.resulttest.objects.filter(time__gte=begtime).filter(time__lte=endtime)
+    if len(q) == 0:
+        getobj = predictionmodel.getData.weatherHis()
+        getobj.getDaydata(begtime)
+
+    data = db2dataset(size, begtime, endtime)
+
+    x = data[:,size:]
     y = predict('knn',x)
     y = y[0].tolist()
+
     for i in range(0,48):
         t = begtime + timedelta(hours=i/2.0)
         r = resulttest(time=t,windspeed=y[i])
