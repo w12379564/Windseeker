@@ -104,3 +104,7 @@ venv.bak/
 .idea/
 *.pyc
 *.sqlite3
+
+.bak
+.dir
+.dat
