@@ -1,14 +1,13 @@
 from __future__ import absolute_import, unicode_literals
 from predictionmodel.prediction import train,predict
 from predictionmodel.dataPreprocess import db2dataset
-from predictionmodel import getData
 from datetime import datetime,timedelta
 from predictionmodel.models import resulttest,celerytest
 import predictionmodel.getData
 from . import models
 from celery import shared_task
 
-
+@shared_task
 def trainTask():
     size = 48
     today = datetime.today()
@@ -19,6 +18,7 @@ def trainTask():
     y = data[:, :size]
     train(x,y)
 
+@shared_task
 def predictTask():
     size = 48
     today = datetime.today()
@@ -41,6 +41,13 @@ def predictTask():
         t = begtime + timedelta(hours=i/2.0)
         r = resulttest(time=t,windspeed=y[i])
         r.save()
+
+@shared_task
+def getDataTask():
+    today = datetime.today()
+    yesterday = today - timedelta(days=1)
+    getobj = predictionmodel.getData.weatherHis()
+    getobj.getDaydata(yesterday)
 
 @shared_task
 def add(x, y):

@@ -12,7 +12,7 @@ from math import sqrt
 from sklearn.externals import joblib
 from datetime import datetime,timedelta
 import predictionmodel.getData
-from predictionmodel.tasks import predictTask,add
+from predictionmodel.tasks import predictTask,add,trainTask
 from celery.schedules import crontab
 # Create your tests here.
 
@@ -41,4 +41,4 @@ def crontabtest():
     print(a.hour)
 
 # Run here.
-crontabtest()
+trainTask()
