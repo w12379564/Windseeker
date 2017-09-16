@@ -42,4 +42,4 @@ def crontabtest():
 
 
 # Run here.
-predictTask()
+testGetdata()
