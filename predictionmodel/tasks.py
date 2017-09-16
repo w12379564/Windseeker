@@ -3,7 +3,7 @@ from predictionmodel.prediction import train,predict
 from predictionmodel.dataPreprocess import db2dataset
 from predictionmodel import getData
 from datetime import datetime,timedelta
-from predictionmodel.models import resulttest
+from predictionmodel.models import resulttest,celerytest
 import predictionmodel.getData
 from . import models
 from celery import shared_task
@@ -45,3 +45,9 @@ def predictTask():
 @shared_task
 def add(x, y):
     print(x+y)
+
+@shared_task
+def writedbtest():
+    t = datetime.now()
+    r = celerytest(time=t)
+    r.save()

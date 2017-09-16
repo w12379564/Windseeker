@@ -13,3 +13,6 @@ class weathertest(models.Model):
 class resulttest(models.Model):
     time = models.DateTimeField(primary_key=True)
     windspeed = models.FloatField()
+
+class celerytest(models.Model):
+    time = models.DateTimeField()

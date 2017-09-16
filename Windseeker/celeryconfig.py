@@ -21,4 +21,8 @@ CELERYBEAT_SCHEDULE = {
          'schedule': crontab(hour=15, minute=31),
          'args': (5, 8)
     },
+    'writedb-every-30-second':{
+        'task': 'predictionmodel.tasks.writedbtest',
+        'schedule': timedelta(seconds=30)
+    }
 }
