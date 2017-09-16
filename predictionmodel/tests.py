@@ -40,5 +40,6 @@ def crontabtest():
     a = crontab(hour=9,minute=10)
     print(a.hour)
 
+
 # Run here.
-trainTask()
+predictTask()
