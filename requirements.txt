@@ -96,7 +96,6 @@ ptyprocess==0.5.1
 py==1.4.33
 pycparser==2.17
 pycrypto==2.6.1
-pycurl==7.43.0
 pyflakes==1.5.0
 Pygments==2.2.0
 pylint==1.6.4
