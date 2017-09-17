@@ -30,6 +30,6 @@ CELERYBEAT_SCHEDULE = {
     },
     'predict-every-4:00-am':{
         'task': 'predictionmodel.tasks.predictTask',
-        'schedule': crontab(hour=8,minute=5)
+        'schedule': crontab(hour=8,minute=12)
     }
 }
