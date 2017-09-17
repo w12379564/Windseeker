@@ -16,7 +16,7 @@ CELERY_IMPORTS = (
 
 # schedules
 CELERYBEAT_SCHEDULE = {
-    'writedb-every-30-second':{
+    'writedb-every-30-second': {
         'task': 'predictionmodel.tasks.writedbtest',
         'schedule': timedelta(seconds=30)
     },
@@ -30,6 +30,6 @@ CELERYBEAT_SCHEDULE = {
     },
     'predict-every-4:00-am':{
         'task': 'predictionmodel.tasks.predictTask',
-        'schedule': crontab(hour=20)
+        'schedule': crontab(hour=8,minute=5)
     }
 }
