@@ -18,7 +18,6 @@ def tables(request):
     return render(request, 'website/tables.html')
 
 def search_ajax(request):
-    predictTask()
     beg=request.GET.get('beg',0)
     end=request.GET.get('end',0)
     begtime = datetime.strptime(beg,'%Y/%m/%d %H:%M')
