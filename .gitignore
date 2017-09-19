@@ -109,3 +109,5 @@ venv.bak/
 *.dir
 *.dat
 *.pid
+
+*.db
