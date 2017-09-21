@@ -20,9 +20,9 @@ CELERYBEAT_SCHEDULE = {
         'task': 'predictionmodel.tasks.getDataTask',
         'schedule': crontab(hour=19)
     },
-    'train-every-7-days':{
+    'train-every-100-days':{
         'task': 'predictionmodel.tasks.trainTask',
-        'schedule': timedelta(days=7)
+        'schedule': timedelta(days=100)
     },
     'predict-every-4:00-am':{
         'task': 'predictionmodel.tasks.predictTask',
