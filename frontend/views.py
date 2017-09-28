@@ -2,7 +2,7 @@ from django.shortcuts import render
 from django.http import JsonResponse
 from datetime import datetime
 from predictionmodel.dataQuery import getrealBytime,getpredictBytime
-from predictionmodel.tasks import predictTask
+from predictionmodel.tasks import predictTask,getDataTask
 
 # Create your views here.
 def index(request):
@@ -29,3 +29,11 @@ def search_ajax(request):
     ret.append(getpredictBytime(begtime, endtime))
     print(ret)
     return JsonResponse(ret,safe=False)
+
+def getdata_ajax(request):
+    getDataTask()
+    return JsonResponse("OK", safe=False)
+
+def predict_ajax(request):
+    predictTask()
+    return JsonResponse("OK", safe=False)

@@ -34,6 +34,10 @@
 				</div>
 			</div>
 			<!-- END MAIN CONTENT -->
+
+		<button type="button" class="btn btn-default" id="cr-btn">Crawling</button>
+		<button type="button" class="btn btn-default" id="pr-btn">Predict</button>
+
 		</div>
 		{% endblock main %}
 		<!-- END MAIN -->
@@ -77,6 +81,16 @@
 				data.series[i]=ret[i];
 			}
 			chart.update(data);
+			});
+		});
+
+		$("#cr-btn").click(function(){
+			$.getJSON("{% url 'getdata_ajax' %}");
+		});
+
+		$("#pr-btn").click(function(){
+			$.getJSON("{% url 'predict_ajax' %}",function(ret){
+			console.log(ret)
 			});
 		});
 		
