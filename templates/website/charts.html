@@ -85,7 +85,9 @@
 		});
 
 		$("#cr-btn").click(function(){
-			$.getJSON("{% url 'getdata_ajax' %}");
+			$.getJSON("{% url 'getdata_ajax' %}",function(ret){
+			console.log(ret)
+			});
 		});
 
 		$("#pr-btn").click(function(){
