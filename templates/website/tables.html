@@ -10,6 +10,13 @@
 		<div class="main">
 			<!-- MAIN CONTENT -->
 			<div class="main-content">
+
+			<form enctype="multipart/form-data" action="{% url 'upload_history' %}" method="post">{% csrf_token %}  
+			   <input type="file" name="myfile" />  
+			   <br/>  
+			   <input type="submit" value="upload"/>  
+			</form>  
+
 				<div class="container-fluid">
 					<h3 class="page-title">表格</h3>
 					<div class="row">

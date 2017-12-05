@@ -3,6 +3,7 @@ from django.http import JsonResponse
 from datetime import datetime
 from predictionmodel.dataQuery import getrealBytime,getpredictBytime
 from predictionmodel.tasks import predictTask,getDataTask
+from predictionmodel.excel2db import read_xlsx
 
 # Create your views here.
 def index(request):
@@ -37,3 +38,11 @@ def getdata_ajax(request):
 def predict_ajax(request):
     predictTask()
     return JsonResponse("OK", safe=False)
+
+def upload_history(request):
+    print("123")
+    if request.method == "POST":
+        myFile =request.FILES.get("myfile", None)
+        if myFile!=None:
+            read_xlsx(myFile)
+    return JsonResponse("upload over", safe=False)
