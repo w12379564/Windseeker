@@ -25,3 +25,22 @@ class HistoryDataTest(models.Model):
     windspeed_30s = models.FloatField()
     windspeed_10m = models.FloatField()
     degree = models.FloatField()
+
+class Config(models.Model):
+    id = models.IntegerField(primary_key=True)
+    configname = models.CharField(max_length=20)
+
+class RealTime_read(models.Model):
+    config = models.OneToOneField(Config,on_delete=models.CASCADE)
+    id = models.IntegerField(primary_key=True)
+    value = models.FloatField()
+
+class HistoryData(models.Model):
+    time = models.DateTimeField()
+    no = models.IntegerField()
+    windspeed = models.FloatField()
+    power = models.FloatField()
+    class Meta:
+        unique_together = ("time","no")
+
+

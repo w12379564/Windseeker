@@ -1,5 +1,10 @@
 import numpy as np
 from predictionmodel.models import weathertest
+from predictionmodel.models import HistoryData
+from django.db.models import Sum
+from datetime import datetime,timedelta
+from predictionmodel.models import HistoryData
+from django.db.models import Sum,Max
 
 def file2dataset(filename,size,shuffleornot):
     f = open(filename, 'r')
@@ -53,3 +58,25 @@ def db2dataset(size,begtime,endtime):
 
     data = np.array(rawdata)
     return data
+
+def Db2ShortTermData(begtime,endtime):
+    #history = HistoryData.objects.filter(time__gte = begtime).filter(time__lt = endtime).values_list('time').annotate(Power_Sum=Sum('power')).values_list('Power_Sum',flat=True)
+    dataset = {'x_train':[],'y_train':[]}
+    nowtime = endtime
+    while nowtime > begtime:
+        x_end = nowtime
+        x_begin = nowtime - timedelta(hours = 4)
+        y_begin = nowtime
+        y_end = nowtime + timedelta(hours = 4)
+        x=HistoryData.objects.filter(time__gte = x_begin).filter(time__lt = x_end).values_list('time').annotate(Power_Sum=Sum('power')).values_list('Power_Sum',flat=True)
+        y=HistoryData.objects.filter(time__gt = y_begin).filter(time__lte = y_end).values_list('time').annotate(Power_Sum=Sum('power')).values_list('Power_Sum',flat=True)
+        if len(x) == 16 and len(y) == 16:
+            dataset['x_train'].append(list(x))
+            dataset['y_train'].append(list(y))
+        nowtime = nowtime - timedelta(minutes=15)
+    return dataset
+
+def Db2FittingData(number):
+    qtest=HistoryData.objects.filter(no=number).values_list('windspeed').annotate(MaxPower=Max('power')).order_by('windspeed')
+    #print(qtest.query)
+    return np.array(list(qtest))
