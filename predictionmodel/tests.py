@@ -19,6 +19,8 @@ from predictionmodel.prediction import ShortTerm_Train,ShortTerm_Predictts,Fitti
 from predictionmodel.models import HistoryData
 from django.db.models import Sum
 import numpy as np
+from predictionmodel.models import RealTime,Config
+from predictionmodel.Realtime2DB import GetGenerationData
 # Create your tests here.
 
 def testGetdata():
@@ -57,5 +59,19 @@ def ShortTerm_test():
         print(y)
         nowtime = nowtime + timedelta(hours=1)
 
+def init_realtime():
+    for i in range(40001,40019):
+        r = RealTime(DataID=i,DataValue=i)
+        r.save()
+
+def init_config():
+    name = ['windspeed','power','reactivate power','voltage','current','frequency','null','null','null','null']
+    for i in range(20001, 20241):
+        rtItem = RealTime.objects.get(DataID=i)
+        idx = (i-2001)%10
+
+        r = Config(RealtimeItem = rtItem,configname = name[idx])
+        r.save()
+
 # Run here.
-#ShortTerm_Train()
+GetGenerationData()
