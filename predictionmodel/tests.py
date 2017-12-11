@@ -20,7 +20,7 @@ from predictionmodel.models import HistoryData
 from django.db.models import Sum
 import numpy as np
 from predictionmodel.models import RealTime,Config
-from predictionmodel.Realtime2DB import GetGenerationData
+from predictionmodel.Realtime2DB import GetGenerationData,GetGenerationInfo
 # Create your tests here.
 
 def testGetdata():
@@ -64,14 +64,22 @@ def init_realtime():
         r = RealTime(DataID=i,DataValue=i)
         r.save()
 
-def init_config():
+def init_config_gendata():
     name = ['windspeed','power','reactivate power','voltage','current','frequency','null','null','null','null']
     for i in range(20001, 20241):
         rtItem = RealTime.objects.get(DataID=i)
-        idx = (i-2001)%10
+        idx = (i-20001)%10
 
         r = Config(RealtimeItem = rtItem,configname = name[idx])
         r.save()
 
+def init_config_geninfo():
+    name = ['stopping','running','error','waiting','null']
+    for i in range(30001,30121):
+        rtItem = RealTime.objects.get(DataID=i)
+        idx = (i - 30001) % 5
+        r = Config(RealtimeItem=rtItem, configname=name[idx])
+        r.save()
+
 # Run here.
-GetGenerationData()
+GetGenerationInfo()
