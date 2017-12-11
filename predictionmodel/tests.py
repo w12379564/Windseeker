@@ -15,7 +15,7 @@ import predictionmodel.getData
 from predictionmodel.tasks import predictTask,add,trainTask
 from celery.schedules import crontab
 from predictionmodel.dataPreprocess import Db2ShortTermData,Db2FittingData
-from predictionmodel.prediction import ShortTerm_Train,ShortTerm_Predictts,FittingCurve,CalExpectPower
+from predictionmodel.prediction import ShortTerm_Train,ShortTerm_Predictts,FittingCurve,CalExpectPower,ShortTerm_Predict
 from predictionmodel.models import HistoryData
 from django.db.models import Sum
 import numpy as np
@@ -81,5 +81,12 @@ def init_config_geninfo():
         r = Config(RealtimeItem=rtItem, configname=name[idx])
         r.save()
 
+def shortTerm_test():
+    nowtime = datetime(year=2016,month=5,day=1,hour=6,minute=0)
+    endtime = datetime(year=2016,month=5,day=17,hour=0,minute=0)
+    while nowtime < endtime:
+        ShortTerm_Predict(nowtime)
+        nowtime = nowtime + timedelta(minutes=15)
+
 # Run here.
-GetGenerationInfo()
+shortTerm_test()

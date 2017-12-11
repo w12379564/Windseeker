@@ -6,7 +6,7 @@ from sklearn.externals import joblib
 from datetime import datetime,timedelta
 from predictionmodel.dataPreprocess import Db2ShortTermData,Db2FittingData
 import numpy as np
-from predictionmodel.models import HistoryData
+from predictionmodel.models import HistoryData,PredictionResult_16points
 from django.db.models import Sum
 from sklearn.preprocessing import PolynomialFeatures
 
@@ -64,9 +64,9 @@ def ShortTerm_Predictts(endtime):
     y_predict = regr.predict(x_predict)
     return y_predict
 
-def ShortTerm_Predict():
-    today = datetime.today()
-    endtime = datetime(year=today.year, month=today.month, day=today.day, minute=today.minute)
+def ShortTerm_Predict(nowtime):
+    #today = datetime.today()
+    endtime = datetime(year=nowtime.year, month=nowtime.month, day=nowtime.day,hour=nowtime.hour,minute=nowtime.minute)
     begtime = endtime - timedelta(hours=4)
     x = HistoryData.objects.filter(time__gte=begtime).filter(time__lt=endtime).values_list('time').annotate(Power_Sum=Sum('power')).values_list('Power_Sum', flat=True)
     x_predict = np.array(list(x))
@@ -74,7 +74,17 @@ def ShortTerm_Predict():
     #print(x_predict)
     regr = joblib.load('predictionmodel/model/' + 'ShortTerm' + '.model')
     y_predict = regr.predict(x_predict)
-    return y_predict
+    #print(y_predict)
+    predict_time = endtime + timedelta(minutes=15)
+    for i in range(0,16):
+        try:
+            obj = PredictionResult_16points.objects.get(DataTime=predict_time)
+        except PredictionResult_16points.DoesNotExist:
+            obj = PredictionResult_16points(DataTime = predict_time, DataValue = y_predict[0,0])
+        obj.DataValue = y_predict[0,i]
+        obj.save()
+        predict_time = predict_time + timedelta(minutes=15)
+
 
 def FittingCurve():
     numbers = [33,34,35,36,37,38]

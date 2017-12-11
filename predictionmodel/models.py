@@ -49,4 +49,8 @@ class WeatherData(models.Model):
     class Meta:
         unique_together = ("DataTime","DataID")
 
+class PredictionResult_16points(models.Model):
+    DataTime = models.DateTimeField(primary_key=True)
+    DataValue = models.FloatField()
+
 
