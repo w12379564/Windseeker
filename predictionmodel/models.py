@@ -54,3 +54,5 @@ class PredictionResult_16points(models.Model):
     DataValue = models.FloatField()
 
 
+
+

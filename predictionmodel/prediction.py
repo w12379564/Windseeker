@@ -43,14 +43,15 @@ def check(y_target,y_predict):
 def ShortTerm_Train():
     today = datetime.today()
     print(today)
-    endtime = datetime(year=today.year,month=today.month,day=today.day,minute=today.minute)
-    #endtime = datetime(year=2016,month=6,day=29,hour=15,minute=45)
+    #endtime = datetime(year=today.year,month=today.month,day=today.day,minute=today.minute)
+    endtime = datetime(year=2016,month=6,day=29,hour=15,minute=45)
     endtime = endtime - timedelta(days=1)
     begtime = endtime - timedelta(days=30)
     dataset = Db2ShortTermData(begtime,endtime)
     x_train = np.array(dataset['x_train'])
     y_train = np.array(dataset['y_train'])
     regr = LinearRegression()
+    #regr = KNeighborsRegressor(5, 'distance')
     regr.fit(x_train,y_train)
     joblib.dump(regr, 'predictionmodel/model/' + 'ShortTerm' + '.model')
 

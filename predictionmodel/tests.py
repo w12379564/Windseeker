@@ -19,7 +19,7 @@ from predictionmodel.prediction import ShortTerm_Train,ShortTerm_Predictts,Fitti
 from predictionmodel.models import HistoryData
 from django.db.models import Sum
 import numpy as np
-from predictionmodel.models import RealTime,Config
+from predictionmodel.models import RealTime,Config,PredictionResult_16points
 from predictionmodel.Realtime2DB import GetGenerationData,GetGenerationInfo
 # Create your tests here.
 
@@ -88,5 +88,43 @@ def shortTerm_test():
         ShortTerm_Predict(nowtime)
         nowtime = nowtime + timedelta(minutes=15)
 
+def plot_shortterm():
+    plt.ion()
+    plt.close()  # clf() # 清图  cla() # 清坐标轴 close() # 关窗口
+    fig = plt.figure()
+    ax = fig.add_subplot(1, 1, 1)
+    begtime = datetime(year=2016, month=5, day=1, hour=6, minute=15)
+    endtime = datetime(year=2016, month=5, day=5, hour=3, minute=45)
+    #y_predict = PredictionResult_16points.objects.filter(DataTime__gte = begtime).filter(DataTime__lte = endtime).values_list('DataValue',flat=True)
+    #y_predict = np.array(list(y_predict))
+    nowtime = begtime
+    y16=[0]
+    cnt=0
+    rError=0
+    aError=0
+    while nowtime<endtime:
+        ShortTerm_Predict(nowtime)
+        qtime = nowtime + timedelta(hours=4)
+        y_predict = PredictionResult_16points.objects.filter(DataTime__gte=begtime).filter(DataTime__lte=qtime).values_list('DataValue', flat=True)
+        y_predict = list(y_predict)
+        focus = y_predict[-16]
+        focus_true = HistoryData.objects.filter(time = nowtime+timedelta(minutes=15)).values_list('time').annotate(Power_Sum=Sum('power')).values_list('Power_Sum',flat=True)
+        focus_true = focus_true[0]
+        y16.append(focus)
+        y_true = HistoryData.objects.filter(time__gte = begtime).filter(time__lte = nowtime).values_list('time').annotate(Power_Sum=Sum('power')).values_list('Power_Sum',flat=True)
+        ax.plot(y16,'b')
+        ax.plot(y_true,'r')
+        plt.pause(0.001)
+        rError = rError + abs(focus_true-focus)/abs(focus_true)
+        aError = aError + abs(focus_true-focus)/14000
+        cnt = cnt + 1
+        nowtime = nowtime + timedelta(minutes=15)
+    print(y_predict)
+    print(aError/cnt)
+    print(rError/cnt)
+
+
+
 # Run here.
-shortTerm_test()
+plot_shortterm()
+#ShortTerm_Train()

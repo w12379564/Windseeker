@@ -1,9 +1,8 @@
 import numpy as np
 from predictionmodel.models import weathertest
-from predictionmodel.models import HistoryData
 from django.db.models import Sum
 from datetime import datetime,timedelta
-from predictionmodel.models import HistoryData
+from predictionmodel.models import HistoryData,WeatherData
 from django.db.models import Sum,Max
 
 def file2dataset(filename,size,shuffleornot):
@@ -80,3 +79,5 @@ def Db2FittingData(number):
     qtest=HistoryData.objects.filter(no=number).values_list('windspeed').annotate(MaxPower=Max('power')).order_by('windspeed')
     #print(qtest.query)
     return np.array(list(qtest))
+
+
