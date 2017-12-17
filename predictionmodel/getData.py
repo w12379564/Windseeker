@@ -123,5 +123,11 @@ class weatherHis:
         data = self.dataProcess(dataRaw, index)
         data = self.dealwithMissing(data)
         for record in data:
-            newrecord = weathertest(time=record[0],temp=record[1],hum=record[2],press=record[3],dir=record[4],windspeed=record[5],condition=record[6])
+            value = [0,0,0,0,0,0]
+            for i in [1,2,3,5]:
+                try:
+                    value[i] = float(record[i])
+                except ValueError:
+                    value[i] = 0
+            newrecord = weathertest(time=record[0],temp=value[1],hum=value[2],press=value[3],dir=record[4],windspeed=value[5],condition=record[6])
             newrecord.save()

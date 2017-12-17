@@ -12,7 +12,7 @@ from math import sqrt
 from sklearn.externals import joblib
 from datetime import datetime,timedelta
 import predictionmodel.getData
-from predictionmodel.tasks import predictTask,add,trainTask
+from predictionmodel.tasks import predictTask,add,trainTask,getDataTask
 from celery.schedules import crontab
 from predictionmodel.dataPreprocess import Db2ShortTermData,Db2FittingData
 from predictionmodel.prediction import ShortTerm_Train,ShortTerm_Predictts,FittingCurve,CalExpectPower,ShortTerm_Predict
@@ -126,5 +126,4 @@ def plot_shortterm():
 
 
 # Run here.
-plot_shortterm()
-#ShortTerm_Train()
+getDataTask()
