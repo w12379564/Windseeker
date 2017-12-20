@@ -4,9 +4,9 @@ from sklearn.linear_model import LinearRegression
 from sklearn.linear_model import RidgeCV
 from sklearn.externals import joblib
 from datetime import datetime,timedelta
-from predictionmodel.dataPreprocess import Db2ShortTermData,Db2FittingData
+from predictionmodel.dataPreprocess import Db2ShortTermData,Db2FittingData,Db2LongTermData,GetX_Predict_LongTerm,GetX_Predict_LongTerm_Naive
 import numpy as np
-from predictionmodel.models import HistoryData,PredictionResult_16points
+from predictionmodel.models import HistoryData,PredictionResult_16points,PredictionResult_288points
 from django.db.models import Sum
 from sklearn.preprocessing import PolynomialFeatures
 
@@ -81,7 +81,7 @@ def ShortTerm_Predict(nowtime):
         try:
             obj = PredictionResult_16points.objects.get(DataTime=predict_time)
         except PredictionResult_16points.DoesNotExist:
-            obj = PredictionResult_16points(DataTime = predict_time, DataValue = y_predict[0,0])
+            obj = PredictionResult_16points(DataTime = predict_time, DataValue = y_predict[0,i])
         obj.DataValue = y_predict[0,i]
         obj.save()
         predict_time = predict_time + timedelta(minutes=15)
@@ -117,3 +117,63 @@ def CalExpectPower(windspeed):
         else:
             ret.append(y_expect[0,0])
     print(ret)
+
+def LongTerm_Train():
+    today = datetime.today()
+    print(today)
+    #endtime = datetime(year=today.year,month=today.month,day=today.day,minute=today.minute)
+    endtime = datetime(year=2016,month=7,day=1,hour=0,minute=0)
+    begtime = datetime(year=2016,month=6,day=1,hour=0,minute=0)
+    dataset = Db2LongTermData(begtime,endtime)
+    x_train = np.array(dataset['x_train'])
+    y_train = np.array(dataset['y_train'])
+    regr = KNeighborsRegressor(5, 'distance')
+    regr.fit(x_train,y_train)
+    joblib.dump(regr, 'predictionmodel/model/' + 'LongTerm' + '.model')
+
+def LongTerm_Predict(nowtime):
+    bt = nowtime + timedelta(minutes=15)
+    x_predict = GetX_Predict_LongTerm(bt)
+    if len(x_predict)!=4*288:
+        return
+    x_predict = np.array(x_predict)
+    x_predict = x_predict.reshape(1, -1)
+    regr = joblib.load('predictionmodel/model/' + 'LongTerm' + '.model')
+    y_predict = regr.predict(x_predict)
+    predict_time = bt
+    for i in range(0,288):
+        try:
+            obj = PredictionResult_288points.objects.get(DataTime=predict_time)
+        except PredictionResult_288points.DoesNotExist:
+            obj = PredictionResult_288points(DataTime = predict_time, DataValue = y_predict[0,i])
+        obj.DataValue = y_predict[0,i]
+        obj.save()
+        predict_time = predict_time + timedelta(minutes=15)
+
+
+def LongTerm_Predict_Naive(nowtime):
+    bt = nowtime + timedelta(minutes=15)
+    x_predict = GetX_Predict_LongTerm_Naive(bt)
+    if len(x_predict)!=288:
+        return False
+    numbers = [33, 34, 35, 36, 37, 38]
+    fz = PolynomialFeatures(degree=5)
+    regr={}
+    for number in numbers:
+        regr[number] = joblib.load('predictionmodel/model/FittingCurve/' + str(number) + '.model')
+    y_predict = []
+    for wsp in x_predict:
+        wsp_5 = fz.fit_transform(wsp)
+        powersum=0
+        for number in numbers:
+            powersum = powersum + regr[number].predict(wsp_5)
+        y_predict.append(powersum)
+    predict_time = bt
+    for i in range(0,288):
+        try:
+            obj = PredictionResult_288points.objects.get(DataTime=predict_time)
+        except PredictionResult_288points.DoesNotExist:
+            obj = PredictionResult_288points(DataTime = predict_time, DataValue = y_predict[i])
+        obj.DataValue = y_predict[i]
+        obj.save()
+        predict_time = predict_time + timedelta(minutes=15)

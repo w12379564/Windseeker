@@ -53,6 +53,10 @@ class PredictionResult_16points(models.Model):
     DataTime = models.DateTimeField(primary_key=True)
     DataValue = models.FloatField()
 
+class PredictionResult_288points(models.Model):
+    DataTime = models.DateTimeField(primary_key=True)
+    DataValue = models.FloatField()
+
 
 
 

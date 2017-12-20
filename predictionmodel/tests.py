@@ -14,12 +14,12 @@ from datetime import datetime,timedelta
 import predictionmodel.getData
 from predictionmodel.tasks import predictTask,add,trainTask,getDataTask
 from celery.schedules import crontab
-from predictionmodel.dataPreprocess import Db2ShortTermData,Db2FittingData
-from predictionmodel.prediction import ShortTerm_Train,ShortTerm_Predictts,FittingCurve,CalExpectPower,ShortTerm_Predict
+from predictionmodel.dataPreprocess import Db2ShortTermData,Db2FittingData,Db2LongTermData,NetDB2Weather
+from predictionmodel.prediction import ShortTerm_Train,ShortTerm_Predictts,FittingCurve,CalExpectPower,ShortTerm_Predict,LongTerm_Train,LongTerm_Predict,LongTerm_Predict_Naive
 from predictionmodel.models import HistoryData
 from django.db.models import Sum
 import numpy as np
-from predictionmodel.models import RealTime,Config,PredictionResult_16points
+from predictionmodel.models import RealTime,Config,PredictionResult_16points,WeatherData,PredictionResult_288points
 from predictionmodel.Realtime2DB import GetGenerationData,GetGenerationInfo
 # Create your tests here.
 
@@ -123,7 +123,39 @@ def plot_shortterm():
     print(aError/cnt)
     print(rError/cnt)
 
+def init_weatherdatats():
+    dt = datetime(year=2016,month=5,day=1,hour=6)
+    for i in range(500):
+        r = WeatherData(DataTime = dt,DataID = 2,DataValue = 20)
+        r.save()
+        dt = dt + timedelta(minutes=15)
 
+def longTerm_test():
+    nowtime = datetime(year=2016,month=5,day=8,hour=6,minute=0)
+    endtime = datetime(year=2016,month=5,day=17,hour=0,minute=0)
+    while nowtime < endtime:
+        LongTerm_Predict(nowtime)
+        nowtime = nowtime + timedelta(days=1)
+
+def longTerm_Naive_test():
+    nowtime = datetime(year=2016,month=5,day=1,hour=6,minute=0)
+    endtime = datetime(year=2016,month=5,day=17,hour=0,minute=0)
+    while nowtime < endtime:
+        LongTerm_Predict_Naive(nowtime)
+        nowtime = nowtime + timedelta(days=1)
+
+
+def plot_longterm(begtime,endtime):
+    y_predict = PredictionResult_288points.objects.filter(DataTime__gte=begtime).filter(DataTime__lte=endtime).values_list('DataValue', flat=True)
+    y_predict = list(y_predict)
+    y_true = HistoryData.objects.filter(time__gte=begtime).filter(time__lte=endtime).values_list('time').annotate(Power_Sum=Sum('power')).values_list('Power_Sum', flat=True)
+    fig = plt.figure()
+    ax = fig.add_subplot(1, 1, 1)
+    ax.plot(y_predict, 'b')
+    ax.plot(y_true, 'r')
+    plt.show()
 
 # Run here.
-getDataTask()
+begtime = datetime(year=2016, month=5, day=8, hour=6, minute=15)
+endtime = begtime + timedelta(days=10)
+plot_longterm(begtime,endtime)

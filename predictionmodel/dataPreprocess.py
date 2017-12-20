@@ -80,4 +80,53 @@ def Db2FittingData(number):
     #print(qtest.query)
     return np.array(list(qtest))
 
+def Db2LongTermData(begtime,endtime):
+    dataset = {'x_train': [], 'y_train': []}
+    nt = endtime
+    while nt>begtime:
+        et = nt
+        bt = et - timedelta(days=3)
+        x = []
+        for i in range(1,5):
+            x_sub = WeatherData.objects.filter(DataID=i).filter(DataTime__gte = bt).filter(DataTime__lt = et).values_list("DataValue",flat=True)
+            x = x + list(x_sub)
+        y = HistoryData.objects.filter(time__gte=bt).filter(time__lt=et).values_list('time').annotate(Power_Sum=Sum('power')).values_list('Power_Sum', flat=True)
+        y = list(y)
+        if len(x)==4*288 and len(y)==288:
+            dataset['x_train'].append(x)
+            dataset['y_train'].append(y)
+        nt = nt - timedelta(days=3)
+    return dataset
 
+def NetDB2Weather(bt,et):
+    #ID 1 windspeed
+    #ID 2 temperature
+    #ID 3 humidity
+    #ID 4 press
+    netdata = weathertest.objects.filter(time__gte=bt).filter(time__lt=et)
+    weatherlist=[]
+    for r in netdata:
+        weatherlist.append(WeatherData(DataTime=r.time,DataID=1,DataValue=r.windspeed/3.6))
+        weatherlist.append(WeatherData(DataTime=r.time+timedelta(minutes=15), DataID=1, DataValue=r.windspeed/3.6))
+        weatherlist.append(WeatherData(DataTime=r.time,DataID=2,DataValue=r.temp))
+        weatherlist.append(WeatherData(DataTime=r.time+timedelta(minutes=15), DataID=2, DataValue=r.temp))
+        weatherlist.append(WeatherData(DataTime=r.time,DataID=3,DataValue=r.hum))
+        weatherlist.append(WeatherData(DataTime=r.time+timedelta(minutes=15), DataID=3, DataValue=r.hum))
+        weatherlist.append(WeatherData(DataTime=r.time,DataID=4,DataValue=r.press))
+        weatherlist.append(WeatherData(DataTime=r.time+timedelta(minutes=15), DataID=4, DataValue=r.press))
+    WeatherData.objects.bulk_create(weatherlist)
+
+def GetX_Predict_LongTerm(bt):
+    et = bt + timedelta(days=3)
+    x = []
+    for i in range(1, 5):
+        x_sub = WeatherData.objects.filter(DataID=i).filter(DataTime__gte=bt).filter(DataTime__lt=et).values_list(
+            "DataValue", flat=True)
+        x = x + list(x_sub)
+    return x
+
+def GetX_Predict_LongTerm_Naive(bt):
+    et = bt + timedelta(days=3)
+    x_sub = WeatherData.objects.filter(DataID=1).filter(DataTime__gte=bt).filter(DataTime__lt=et).values_list(
+            "DataValue", flat=True)
+    return x_sub
