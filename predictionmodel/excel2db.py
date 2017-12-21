@@ -20,5 +20,8 @@ def read_xlsx1(inputFile):
     for row in df.itertuples():
         t=str(row.time)
         t=t.replace('/','-')
-        newrecord = HistoryData(time=t,no=row.no,power=row.power,windspeed=row.windspeed)
-        newrecord.save()
+        try:
+            newrecord = HistoryData.objects.get(time=t,no=row.no)
+        except HistoryData.DoesNotExist:
+            newrecord = HistoryData(time=t, no=row.no, power=row.power, windspeed=row.windspeed)
+            newrecord.save()
