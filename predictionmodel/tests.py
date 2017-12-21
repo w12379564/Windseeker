@@ -93,8 +93,8 @@ def plot_shortterm():
     plt.close()  # clf() # 清图  cla() # 清坐标轴 close() # 关窗口
     fig = plt.figure()
     ax = fig.add_subplot(1, 1, 1)
-    begtime = datetime(year=2016, month=5, day=1, hour=6, minute=15)
-    endtime = datetime(year=2016, month=5, day=5, hour=3, minute=45)
+    begtime = datetime(year=2016, month=10, day=1, hour=6, minute=15)
+    endtime = datetime(year=2016, month=10, day=5, hour=3, minute=45)
     #y_predict = PredictionResult_16points.objects.filter(DataTime__gte = begtime).filter(DataTime__lte = endtime).values_list('DataValue',flat=True)
     #y_predict = np.array(list(y_predict))
     nowtime = begtime
@@ -131,11 +131,11 @@ def init_weatherdatats():
         dt = dt + timedelta(minutes=15)
 
 def longTerm_test():
-    nowtime = datetime(year=2016,month=5,day=8,hour=6,minute=0)
-    endtime = datetime(year=2016,month=5,day=17,hour=0,minute=0)
+    nowtime = datetime(year=2016,month=10,day=8,hour=6,minute=0)
+    endtime = datetime(year=2016,month=10,day=17,hour=0,minute=0)
     while nowtime < endtime:
-        LongTerm_Predict(nowtime)
-        nowtime = nowtime + timedelta(days=1)
+        LongTerm_Predict_Naive(nowtime)
+        nowtime = nowtime + timedelta(days=3)
 
 def longTerm_Naive_test():
     nowtime = datetime(year=2016,month=5,day=1,hour=6,minute=0)
@@ -156,6 +156,6 @@ def plot_longterm(begtime,endtime):
     plt.show()
 
 # Run here.
-begtime = datetime(year=2016, month=5, day=8, hour=6, minute=15)
+begtime = datetime(year=2016, month=10, day=8, hour=6, minute=15)
 endtime = begtime + timedelta(days=10)
-plot_longterm(begtime,endtime)
+plot_shortterm()

@@ -4,11 +4,15 @@ from sklearn.linear_model import LinearRegression
 from sklearn.linear_model import RidgeCV
 from sklearn.externals import joblib
 from datetime import datetime,timedelta
-from predictionmodel.dataPreprocess import Db2ShortTermData,Db2FittingData,Db2LongTermData,GetX_Predict_LongTerm,GetX_Predict_LongTerm_Naive
+from predictionmodel.dataPreprocess import Db2ShortTermData,Db2FittingData,Db2LongTermData,GetX_Predict_LongTerm,GetX_Predict_LongTerm_Naive,GetX_Predict_ShortTerm
 import numpy as np
 from predictionmodel.models import HistoryData,PredictionResult_16points,PredictionResult_288points
 from django.db.models import Sum
 from sklearn.preprocessing import PolynomialFeatures
+from predictionmodel.Result2DB import WriteDB_16points,WriteDB_288points,WriteDB_288points_Naive
+
+numbers = [33, 34, 35, 36, 37, 38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54]
+
 
 def train(x_train,y_train):
     ESTIMATORS = {
@@ -40,13 +44,7 @@ def check(y_target,y_predict):
     reError_total=reError_sample.sum(axis=0)/reError_sample.shape[0]
     return reError_sample,reError_total
 
-def ShortTerm_Train():
-    today = datetime.today()
-    print(today)
-    #endtime = datetime(year=today.year,month=today.month,day=today.day,minute=today.minute)
-    endtime = datetime(year=2016,month=6,day=29,hour=15,minute=45)
-    endtime = endtime - timedelta(days=1)
-    begtime = endtime - timedelta(days=30)
+def ShortTerm_Train(begtime,endtime):
     dataset = Db2ShortTermData(begtime,endtime)
     x_train = np.array(dataset['x_train'])
     y_train = np.array(dataset['y_train'])
@@ -66,29 +64,18 @@ def ShortTerm_Predictts(endtime):
     return y_predict
 
 def ShortTerm_Predict(nowtime):
-    #today = datetime.today()
-    endtime = datetime(year=nowtime.year, month=nowtime.month, day=nowtime.day,hour=nowtime.hour,minute=nowtime.minute)
-    begtime = endtime - timedelta(hours=4)
-    x = HistoryData.objects.filter(time__gte=begtime).filter(time__lt=endtime).values_list('time').annotate(Power_Sum=Sum('power')).values_list('Power_Sum', flat=True)
-    x_predict = np.array(list(x))
+    x = GetX_Predict_ShortTerm(nowtime)
+    x_predict = np.array(x)
     x_predict = x_predict.reshape(1,-1)
     #print(x_predict)
     regr = joblib.load('predictionmodel/model/' + 'ShortTerm' + '.model')
     y_predict = regr.predict(x_predict)
     #print(y_predict)
-    predict_time = endtime + timedelta(minutes=15)
-    for i in range(0,16):
-        try:
-            obj = PredictionResult_16points.objects.get(DataTime=predict_time)
-        except PredictionResult_16points.DoesNotExist:
-            obj = PredictionResult_16points(DataTime = predict_time, DataValue = y_predict[0,i])
-        obj.DataValue = y_predict[0,i]
-        obj.save()
-        predict_time = predict_time + timedelta(minutes=15)
+    predict_time = nowtime + timedelta(minutes=15)
+    WriteDB_16points(predict_time, y_predict)
 
 
 def FittingCurve():
-    numbers = [33,34,35,36,37,38]
     fz = PolynomialFeatures(degree=5)
     for number in numbers:
         dataset=Db2FittingData(number)
@@ -103,7 +90,6 @@ def FittingCurve():
 
 def CalExpectPower(windspeed):
     ret=[]
-    numbers = [33, 34, 35, 36, 37, 38]
     fz = PolynomialFeatures(degree=5)
     wsp = np.array([[windspeed]])
     wsp_5 = fz.fit_transform(wsp)
@@ -118,12 +104,7 @@ def CalExpectPower(windspeed):
             ret.append(y_expect[0,0])
     print(ret)
 
-def LongTerm_Train():
-    today = datetime.today()
-    print(today)
-    #endtime = datetime(year=today.year,month=today.month,day=today.day,minute=today.minute)
-    endtime = datetime(year=2016,month=7,day=1,hour=0,minute=0)
-    begtime = datetime(year=2016,month=6,day=1,hour=0,minute=0)
+def LongTerm_Train(begtime,endtime):
     dataset = Db2LongTermData(begtime,endtime)
     x_train = np.array(dataset['x_train'])
     y_train = np.array(dataset['y_train'])
@@ -132,31 +113,21 @@ def LongTerm_Train():
     joblib.dump(regr, 'predictionmodel/model/' + 'LongTerm' + '.model')
 
 def LongTerm_Predict(nowtime):
-    bt = nowtime + timedelta(minutes=15)
-    x_predict = GetX_Predict_LongTerm(bt)
+    x_predict = GetX_Predict_LongTerm(nowtime)
     if len(x_predict)!=4*288:
         return
     x_predict = np.array(x_predict)
     x_predict = x_predict.reshape(1, -1)
     regr = joblib.load('predictionmodel/model/' + 'LongTerm' + '.model')
     y_predict = regr.predict(x_predict)
-    predict_time = bt
-    for i in range(0,288):
-        try:
-            obj = PredictionResult_288points.objects.get(DataTime=predict_time)
-        except PredictionResult_288points.DoesNotExist:
-            obj = PredictionResult_288points(DataTime = predict_time, DataValue = y_predict[0,i])
-        obj.DataValue = y_predict[0,i]
-        obj.save()
-        predict_time = predict_time + timedelta(minutes=15)
+    predict_time = nowtime + timedelta(minutes=15)
+    WriteDB_288points(predict_time, y_predict)
 
 
 def LongTerm_Predict_Naive(nowtime):
-    bt = nowtime + timedelta(minutes=15)
-    x_predict = GetX_Predict_LongTerm_Naive(bt)
+    x_predict = GetX_Predict_LongTerm_Naive(nowtime)
     if len(x_predict)!=288:
         return False
-    numbers = [33, 34, 35, 36, 37, 38]
     fz = PolynomialFeatures(degree=5)
     regr={}
     for number in numbers:
@@ -168,12 +139,7 @@ def LongTerm_Predict_Naive(nowtime):
         for number in numbers:
             powersum = powersum + regr[number].predict(wsp_5)
         y_predict.append(powersum)
-    predict_time = bt
-    for i in range(0,288):
-        try:
-            obj = PredictionResult_288points.objects.get(DataTime=predict_time)
-        except PredictionResult_288points.DoesNotExist:
-            obj = PredictionResult_288points(DataTime = predict_time, DataValue = y_predict[i])
-        obj.DataValue = y_predict[i]
-        obj.save()
-        predict_time = predict_time + timedelta(minutes=15)
+
+    predict_time = nowtime + timedelta(minutes=15)
+    WriteDB_288points_Naive(predict_time, y_predict)
+

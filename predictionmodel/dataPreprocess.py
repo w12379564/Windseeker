@@ -67,8 +67,9 @@ def Db2ShortTermData(begtime,endtime):
         x_begin = nowtime - timedelta(hours = 4)
         y_begin = nowtime
         y_end = nowtime + timedelta(hours = 4)
-        x=HistoryData.objects.filter(time__gte = x_begin).filter(time__lt = x_end).values_list('time').annotate(Power_Sum=Sum('power')).values_list('Power_Sum',flat=True)
-        y=HistoryData.objects.filter(time__gt = y_begin).filter(time__lte = y_end).values_list('time').annotate(Power_Sum=Sum('power')).values_list('Power_Sum',flat=True)
+        x=HistoryData.objects.filter(time__gte = x_begin).filter(time__lt = x_end).values_list('time').annotate(Power_Sum=Sum('power')).values_list('Power_Sum',flat=True).order_by('time')
+        print(list(x))
+        y=HistoryData.objects.filter(time__gt = y_begin).filter(time__lte = y_end).values_list('time').annotate(Power_Sum=Sum('power')).values_list('Power_Sum',flat=True).order_by('time')
         if len(x) == 16 and len(y) == 16:
             dataset['x_train'].append(list(x))
             dataset['y_train'].append(list(y))
@@ -88,9 +89,9 @@ def Db2LongTermData(begtime,endtime):
         bt = et - timedelta(days=3)
         x = []
         for i in range(1,5):
-            x_sub = WeatherData.objects.filter(DataID=i).filter(DataTime__gte = bt).filter(DataTime__lt = et).values_list("DataValue",flat=True)
+            x_sub = WeatherData.objects.filter(DataID=i).filter(DataTime__gte = bt).filter(DataTime__lt = et).values_list("DataValue",flat=True).order_by('DataTime')
             x = x + list(x_sub)
-        y = HistoryData.objects.filter(time__gte=bt).filter(time__lt=et).values_list('time').annotate(Power_Sum=Sum('power')).values_list('Power_Sum', flat=True)
+        y = HistoryData.objects.filter(time__gte=bt).filter(time__lt=et).values_list('time').annotate(Power_Sum=Sum('power')).values_list('Power_Sum', flat=True).order_by('time')
         y = list(y)
         if len(x)==4*288 and len(y)==288:
             dataset['x_train'].append(x)
@@ -116,17 +117,28 @@ def NetDB2Weather(bt,et):
         weatherlist.append(WeatherData(DataTime=r.time+timedelta(minutes=15), DataID=4, DataValue=r.press))
     WeatherData.objects.bulk_create(weatherlist)
 
-def GetX_Predict_LongTerm(bt):
+def GetX_Predict_LongTerm(nowtime):
+    nowtime = datetime(year=nowtime.year, month=nowtime.month, day=nowtime.day,hour=nowtime.hour,minute=nowtime.minute)
+    bt = nowtime + timedelta(minutes=15)
     et = bt + timedelta(days=3)
     x = []
     for i in range(1, 5):
         x_sub = WeatherData.objects.filter(DataID=i).filter(DataTime__gte=bt).filter(DataTime__lt=et).values_list(
-            "DataValue", flat=True)
+            "DataValue", flat=True).order_by('DataTime')
         x = x + list(x_sub)
     return x
 
-def GetX_Predict_LongTerm_Naive(bt):
+def GetX_Predict_LongTerm_Naive(nowtime):
+    nowtime = datetime(year=nowtime.year, month=nowtime.month, day=nowtime.day,hour=nowtime.hour,minute=nowtime.minute)
+    bt = nowtime + timedelta(minutes=15)
     et = bt + timedelta(days=3)
     x_sub = WeatherData.objects.filter(DataID=1).filter(DataTime__gte=bt).filter(DataTime__lt=et).values_list(
-            "DataValue", flat=True)
-    return x_sub
+            "DataValue", flat=True).order_by('DataTime')
+    return list(x_sub)
+
+def GetX_Predict_ShortTerm(nowtime):
+    nowtime = datetime(year=nowtime.year, month=nowtime.month, day=nowtime.day,hour=nowtime.hour,minute=nowtime.minute)
+    endtime = nowtime
+    begtime = endtime - timedelta(hours=4)
+    x = HistoryData.objects.filter(time__gte=begtime).filter(time__lt=endtime).values_list('time').annotate(Power_Sum=Sum('power')).values_list('Power_Sum', flat=True).order_by('time')
+    return list(x)
