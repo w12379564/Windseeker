@@ -1,4 +1,4 @@
-from predictionmodel.models import PredictionResult_16points,PredictionResult_288points
+from predictionmodel.models import PredictionResult_16points,PredictionResult_288points,RealTime
 from datetime import datetime,timedelta
 
 def WriteDB_16points(predict_time,y_predict):
@@ -30,3 +30,9 @@ def WriteDB_288points_Naive(predict_time,y_predict):
         obj.DataValue = y_predict[i]
         obj.save()
         predict_time = predict_time + timedelta(minutes=15)
+
+def WriteExpect(ExpectSum,UsableSum,LimitSum):
+    RealTime.objects.filter(DataID=40003).update(DataValue=ExpectSum)
+    RealTime.objects.filter(DataID=40004).update(DataValue=UsableSum)
+    RealTime.objects.filter(DataID=40005).update(DataValue=LimitSum)
+

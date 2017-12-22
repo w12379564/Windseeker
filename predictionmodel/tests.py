@@ -20,7 +20,8 @@ from predictionmodel.models import HistoryData
 from django.db.models import Sum
 import numpy as np
 from predictionmodel.models import RealTime,Config,PredictionResult_16points,WeatherData,PredictionResult_288points
-from predictionmodel.Realtime2DB import GetGenerationData,GetGenerationInfo
+from predictionmodel.Realtime2DB import GetGenerationData,GetGenerationStatus
+from predictionmodel.Result2DB import WriteExpect
 # Create your tests here.
 
 def testGetdata():
@@ -155,9 +156,10 @@ def plot_longterm(begtime,endtime):
     ax.plot(y_true, 'r')
     plt.show()
 
+
+
 # Run here.
 begtime = datetime(year=2016, month=10, day=8, hour=6, minute=15)
 endtime = begtime + timedelta(days=10)
 nowtime = datetime(year=2016, month=12, day=30, hour=22, minute=0)
-ret = GetX_Predict_LongTerm_Naive(nowtime)
-print(ret)
+WriteExpect(1,2,3)
