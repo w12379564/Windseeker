@@ -148,4 +148,10 @@ def GetX_Predict_ShortTerm(nowtime):
     endtime = nowtime
     begtime = endtime - timedelta(hours=4)
     x = HistoryData.objects.filter(time__gte=begtime).filter(time__lt=endtime).values_list('time').annotate(Power_Sum=Sum('power')).values_list('Power_Sum', flat=True).order_by('time')
-    return list(x)
+    ret=list(x)
+    while len(ret)<16:
+        if len(ret)>0:
+            ret.append(ret[-1])
+        else:
+            ret.append(0)
+    return ret
