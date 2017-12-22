@@ -134,7 +134,14 @@ def GetX_Predict_LongTerm_Naive(nowtime):
     et = bt + timedelta(days=3)
     x_sub = WeatherData.objects.filter(DataID=1).filter(DataTime__gte=bt).filter(DataTime__lt=et).values_list(
             "DataValue", flat=True).order_by('DataTime')
-    return list(x_sub)
+
+    ret = list(x_sub)
+    while len(ret)<288:
+        if len(ret)>0:
+            ret.append(ret[-1])
+        else:
+            ret.append(0)
+    return ret
 
 def GetX_Predict_ShortTerm(nowtime):
     nowtime = datetime(year=nowtime.year, month=nowtime.month, day=nowtime.day,hour=nowtime.hour,minute=nowtime.minute)

@@ -14,7 +14,7 @@ from datetime import datetime,timedelta
 import predictionmodel.getData
 from predictionmodel.tasks import predictTask,add,trainTask,getDataTask
 from celery.schedules import crontab
-from predictionmodel.dataPreprocess import Db2ShortTermData,Db2FittingData,Db2LongTermData,NetDB2Weather
+from predictionmodel.dataPreprocess import Db2ShortTermData,Db2FittingData,Db2LongTermData,NetDB2Weather,GetX_Predict_LongTerm_Naive
 from predictionmodel.prediction import ShortTerm_Train,ShortTerm_Predictts,FittingCurve,CalExpectPower,ShortTerm_Predict,LongTerm_Train,LongTerm_Predict,LongTerm_Predict_Naive
 from predictionmodel.models import HistoryData
 from django.db.models import Sum
@@ -158,4 +158,6 @@ def plot_longterm(begtime,endtime):
 # Run here.
 begtime = datetime(year=2016, month=10, day=8, hour=6, minute=15)
 endtime = begtime + timedelta(days=10)
-plot_shortterm()
+nowtime = datetime(year=2016, month=12, day=30, hour=22, minute=0)
+ret = GetX_Predict_LongTerm_Naive(nowtime)
+print(ret)
