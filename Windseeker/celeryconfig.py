@@ -16,20 +16,8 @@ CELERY_IMPORTS = (
 
 # schedules
 CELERYBEAT_SCHEDULE = {
-    'predict_15min': {
-        'task': 'predictionmodel.tasks.Predict',
-        'schedule': crontab(minute='*/15')
-    },
-    'get_data_15min': {
-        'task': 'predictionmodel.tasks.GetData',
-        'schedule': crontab(minute='*/15')
-    },
-    'Calc_Expect_value_15min': {
-        'task': 'predictionmodel.tasks.CalcExpectValue',
-        'schedule': crontab(minute='*/15')
-    },
-    'Write_WindTower_value_15min': {
-        'task': 'predictionmodel.tasks.WriteWindTowerInfo',
+    'WindseekerTasks': {
+        'task': 'predictionmodel.tasks.WindseekerTasks',
         'schedule': crontab(minute='*/15')
     }
 }

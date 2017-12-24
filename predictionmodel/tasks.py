@@ -81,9 +81,22 @@ def GetData():
 
 
 @shared_task
-def CalcExpectValue():
+def CalcExpectValue_WriteRT():
+    WriteWindTower()
     CalExpectPower()
 
 @shared_task
-def WriteWindTowerInfo():
+def WindseekerTasks():
+    nowtime = datetime.today()
+    #timestap = datetime(year=nowtime.year, month=nowtime.month, day=nowtime.day,hour=nowtime.hour,minute=nowtime.minute)
+    timestap = datetime(year=nowtime.year-1, month=nowtime.month-6, day=nowtime.day,hour=nowtime.hour,minute=nowtime.minute)
+    #Write WindTower data
     WriteWindTower()
+    #from realtime to db
+    GetGenerationData(timestap)
+
+    CalExpectPower()
+
+    ShortTerm_Predict(timestap)
+
+    LongTerm_Predict_Naive(timestap)
