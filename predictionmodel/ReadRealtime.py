@@ -20,7 +20,7 @@ def GetGenerationStatus():
               RtItems[i+3].config.configname: RtItems[i+3].DataValue,
               RtItems[i+4].config.configname: RtItems[i+4].DataValue}
         ret.append(Status)
-    print(ret)
+    #print(ret)
     return ret
 
 def GetWindTower():

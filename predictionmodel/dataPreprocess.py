@@ -141,6 +141,9 @@ def GetX_Predict_LongTerm_Naive(nowtime):
             ret.append(ret[-1])
         else:
             ret.append(0)
+
+    if len(ret)>288:
+        ret = ret[-288:]
     return ret
 
 def GetX_Predict_ShortTerm(nowtime):
@@ -154,6 +157,9 @@ def GetX_Predict_ShortTerm(nowtime):
             ret.append(ret[-1])
         else:
             ret.append(0)
+
+    if len(ret)>16:
+        ret = ret[-16:]
     return ret
 
 def Get_Realtime_WindSpeed():

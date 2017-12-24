@@ -111,8 +111,8 @@ def CalExpectPower(): #use realtime windspeed
     GenerationStatus = GetGenerationStatus()
     len1=len(ExpectPower)
     len2=len(GenerationStatus)
-    len=min(len1,len2)
-    for i in range(len):
+    len0=min(len1,len2)
+    for i in range(len0):
         ExpectSum = ExpectSum + ExpectPower[i]
         if GenerationStatus[i]['running']==1:
             UsableSum = UsableSum + ExpectPower[i]

@@ -176,7 +176,7 @@ def init_config_winddir():
 
 
 # Run here.
-begtime = datetime(year=2016, month=10, day=8, hour=6, minute=15)
+begtime = datetime(year=2016, month=6, day=24, hour=19, minute=0)
 endtime = begtime + timedelta(days=10)
 nowtime = datetime(year=2016, month=12, day=30, hour=22, minute=0)
-WriteWindTower()
+ShortTerm_Predict(begtime)
