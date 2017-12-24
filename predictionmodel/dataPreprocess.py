@@ -2,7 +2,7 @@ import numpy as np
 from predictionmodel.models import weathertest
 from django.db.models import Sum
 from datetime import datetime,timedelta
-from predictionmodel.models import HistoryData,WeatherData
+from predictionmodel.models import HistoryData,WeatherData,RealTime
 from django.db.models import Sum,Max
 
 def file2dataset(filename,size,shuffleornot):
@@ -154,4 +154,10 @@ def GetX_Predict_ShortTerm(nowtime):
             ret.append(ret[-1])
         else:
             ret.append(0)
+    return ret
+
+def Get_Realtime_WindSpeed():
+    #70m windspeed avg
+    ret = RealTime.objects.filter(DataID=10017).values_list('DataValue',flat=True)
+    ret = float(ret[0])
     return ret

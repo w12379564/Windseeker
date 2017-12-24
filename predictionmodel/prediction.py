@@ -4,13 +4,13 @@ from sklearn.linear_model import LinearRegression
 from sklearn.linear_model import RidgeCV
 from sklearn.externals import joblib
 from datetime import datetime,timedelta
-from predictionmodel.dataPreprocess import Db2ShortTermData,Db2FittingData,Db2LongTermData,GetX_Predict_LongTerm,GetX_Predict_LongTerm_Naive,GetX_Predict_ShortTerm
+from predictionmodel.dataPreprocess import Db2ShortTermData,Db2FittingData,Db2LongTermData,GetX_Predict_LongTerm,GetX_Predict_LongTerm_Naive,GetX_Predict_ShortTerm,Get_Realtime_WindSpeed
 import numpy as np
 from predictionmodel.models import HistoryData,PredictionResult_16points,PredictionResult_288points
 from django.db.models import Sum
 from sklearn.preprocessing import PolynomialFeatures
-from predictionmodel.Result2DB import WriteDB_16points,WriteDB_288points,WriteDB_288points_Naive,WriteExpect
-from predictionmodel.Realtime2DB import GetGenerationStatus
+from predictionmodel.WriteRealtime import WriteDB_16points,WriteDB_288points,WriteDB_288points_Naive,WriteExpect
+from predictionmodel.ReadRealtime import GetGenerationStatus
 
 numbers = [33, 34, 35, 36, 37, 38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54]
 
@@ -89,7 +89,8 @@ def FittingCurve():
         regr.fit(x_5, y)
         joblib.dump(regr, 'predictionmodel/model/FittingCurve/' + str(number) + '.model')
 
-def CalExpectPower(windspeed): #use nowtime for windspeed
+def CalExpectPower(): #use realtime windspeed
+    windspeed=Get_Realtime_WindSpeed()
     ExpectPower=[]
     fz = PolynomialFeatures(degree=5)
     wsp = np.array([[windspeed]])

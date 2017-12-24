@@ -20,8 +20,9 @@ from predictionmodel.models import HistoryData
 from django.db.models import Sum
 import numpy as np
 from predictionmodel.models import RealTime,Config,PredictionResult_16points,WeatherData,PredictionResult_288points
-from predictionmodel.Realtime2DB import GetGenerationData,GetGenerationStatus
-from predictionmodel.Result2DB import WriteExpect
+from predictionmodel.ReadRealtime import GetGenerationData,GetGenerationStatus,GetWindTower
+from predictionmodel.WriteRealtime import WriteExpect,WriteWindTower
+from predictionmodel.dataPreprocess import Get_Realtime_WindSpeed
 # Create your tests here.
 
 def testGetdata():
@@ -156,10 +157,26 @@ def plot_longterm(begtime,endtime):
     ax.plot(y_true, 'r')
     plt.show()
 
+def init_config_windspeed():
+    name = ['windspeed_real_','windspeed_avg_','windspeed_max_','windspeed_min_','windspeed_sigma_']
+    idx=10031
+    for i in range(0,5):
+        RT = RealTime.objects.get(DataID=idx+i)
+        CONFIG = Config(RealtimeItem=RT,configname=name[i]+'10m')
+        CONFIG.save()
+
+
+def init_config_winddir():
+    name = ['dir_real_', 'dir_avg_', 'dir_max_', 'dir_min_', 'dir_sigma_']
+    idx = 10031
+    for i in range(0, 5):
+        RT = RealTime.objects.get(DataID=idx + i)
+        CONFIG = Config(RealtimeItem=RT, configname=name[i] + '10m')
+        CONFIG.save()
 
 
 # Run here.
 begtime = datetime(year=2016, month=10, day=8, hour=6, minute=15)
 endtime = begtime + timedelta(days=10)
 nowtime = datetime(year=2016, month=12, day=30, hour=22, minute=0)
-WriteExpect(1,2,3)
+WriteWindTower()

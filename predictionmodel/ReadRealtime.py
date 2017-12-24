@@ -24,5 +24,8 @@ def GetGenerationStatus():
     return ret
 
 def GetWindTower():
-    RtItems = RealTime.objects.filter(DataID__gte=10001).filter(DataID__lte=10056)
-    #TO DO
+    RtItems = RealTime.objects.filter(DataID__gte=10001).filter(DataID__lte=10035)
+    WindTowerInfo={}
+    for RtItem in RtItems:
+        WindTowerInfo[RtItem.config.configname] = RtItem.DataValue
+    return WindTowerInfo

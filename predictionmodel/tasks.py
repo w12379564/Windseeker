@@ -6,8 +6,9 @@ from predictionmodel.models import resulttest,celerytest
 import predictionmodel.getData
 from . import models
 from celery import shared_task
-from predictionmodel.prediction import ShortTerm_Predict,LongTerm_Predict_Naive
-from predictionmodel.Realtime2DB import GetGenerationData
+from predictionmodel.prediction import ShortTerm_Predict,LongTerm_Predict_Naive,CalExpectPower
+from predictionmodel.ReadRealtime import GetGenerationData
+from predictionmodel.WriteRealtime import WriteWindTower
 
 @shared_task
 def trainTask():
@@ -75,3 +76,11 @@ def GetData():
     #timestap = datetime(year=nowtime.year, month=nowtime.month, day=nowtime.day,hour=nowtime.hour,minute=nowtime.minute)
     timestap = datetime(year=nowtime.year-1, month=nowtime.month-6, day=nowtime.day,hour=nowtime.hour,minute=nowtime.minute)
     GetGenerationData(timestap)
+
+@shared_task
+def CalcExpectValue():
+    CalExpectPower()
+
+@shared_task
+def WriteWindTowerInfo():
+    WriteWindTower()

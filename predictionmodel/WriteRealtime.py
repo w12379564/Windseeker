@@ -1,5 +1,6 @@
 from predictionmodel.models import PredictionResult_16points,PredictionResult_288points,RealTime
 from datetime import datetime,timedelta
+from predictionmodel.ReadRealtime import GetWindTower
 
 def WriteDB_16points(predict_time,y_predict):
     for i in range(0,16):
@@ -35,4 +36,15 @@ def WriteExpect(ExpectSum,UsableSum,LimitSum):
     RealTime.objects.filter(DataID=40003).update(DataValue=ExpectSum)
     RealTime.objects.filter(DataID=40004).update(DataValue=UsableSum)
     RealTime.objects.filter(DataID=40005).update(DataValue=LimitSum)
+
+def WriteWindTower():
+    WindTowerInfo = GetWindTower()
+    #10m
+    RealTime.objects.filter(DataID=40008).update(DataValue=WindTowerInfo['windspeed_avg_10m'])
+    #30m
+    RealTime.objects.filter(DataID=40010).update(DataValue=WindTowerInfo['windspeed_avg_30m'])
+    #50m
+    RealTime.objects.filter(DataID=40012).update(DataValue=WindTowerInfo['windspeed_avg_50m'])
+    #70m
+    RealTime.objects.filter(DataID=40014).update(DataValue=WindTowerInfo['windspeed_avg_70m'])
 
