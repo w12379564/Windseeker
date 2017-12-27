@@ -5,10 +5,16 @@ def GetGenerationData(nowtime):
     InsertTime = datetime(year=nowtime.year,month=nowtime.month,day=nowtime.day,hour=nowtime.hour,minute=nowtime.minute)
     #print(InsertTime)
     RtItems = RealTime.objects.filter(DataID__gte = 20001).filter(DataID__lte = 20240)
-    toInsert=[]
     for i in range(0,240,10):
-        toInsert.append(HistoryData(time=InsertTime,no=i/10+1,windspeed=RtItems[i].DataValue,power=RtItems[i+1].DataValue))
-    HistoryData.objects.bulk_create(toInsert)
+        t = InsertTime
+        number = i/10+1
+        wsp = RtItems[i].DataValue
+        p = RtItems[i + 1].DataValue
+        try:
+            newrecord = HistoryData.objects.get(time=t,no=number)
+        except HistoryData.DoesNotExist:
+            newrecord = HistoryData(time=t, no=number, power=p, windspeed=wsp)
+            newrecord.save()
 
 def GetGenerationStatus():
     RtItems = RealTime.objects.filter(DataID__gte=30001).filter(DataID__lte=30120)

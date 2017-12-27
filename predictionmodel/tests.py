@@ -23,6 +23,7 @@ from predictionmodel.models import RealTime,Config,PredictionResult_16points,Wea
 from predictionmodel.ReadRealtime import GetGenerationData,GetGenerationStatus,GetWindTower
 from predictionmodel.WriteRealtime import WriteExpect,WriteWindTower
 from predictionmodel.dataPreprocess import Get_Realtime_WindSpeed
+from predictionmodel.tasks import WindseekerTasks
 # Create your tests here.
 
 def testGetdata():
@@ -174,9 +175,11 @@ def init_config_winddir():
         CONFIG = Config(RealtimeItem=RT, configname=name[i] + '10m')
         CONFIG.save()
 
+def multi_key_test():
+    HistoryData
 
 # Run here.
 begtime = datetime(year=2016, month=6, day=24, hour=19, minute=0)
 endtime = begtime + timedelta(days=10)
 nowtime = datetime(year=2016, month=12, day=30, hour=22, minute=0)
-ShortTerm_Predict(begtime)
+WindseekerTasks()
