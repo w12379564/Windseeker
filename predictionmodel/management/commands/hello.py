@@ -4,7 +4,7 @@ import os
 
 class Command(BaseCommand):
     def handle(self, *args, **options):
-        os.chdir('/home/ganyuxiang/githubRepository/Windseeker')
+        os.chdir('/home/futuregadget013/project/Windseeker')
         now = datetime.today()
         s = str(now)
         print(s)

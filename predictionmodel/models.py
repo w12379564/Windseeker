@@ -57,7 +57,7 @@ class RealTime_WindTower(models.Model):
     DataID = models.IntegerField(primary_key=True)
     DataValue = models.FloatField()
 
-class RealTime_GeneraionData(models.Model):
+class RealTime_GenerationData(models.Model):
     DataID = models.IntegerField(primary_key=True)
     DataValue = models.FloatField()
 

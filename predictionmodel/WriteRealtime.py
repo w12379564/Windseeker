@@ -3,15 +3,13 @@ from datetime import datetime,timedelta
 from predictionmodel.ReadRealtime import GetWindTower
 
 def WriteDB_16points(predict_time,y_predict):
+    PredictionResult_16points.objects.filter(DataTime__gte = predict_time).delete()
     for i in range(0,16):
         y_ = y_predict[0,i]
         if y_<0:
             y_ = 0
-        try:
-            obj = PredictionResult_16points.objects.get(DataTime=predict_time)
-        except PredictionResult_16points.DoesNotExist:
-            obj = PredictionResult_16points(DataTime = predict_time, DataValue = y_)
-        obj.DataValue = y_
+
+        obj = PredictionResult_16points(DataTime = predict_time, DataValue = y_)
         obj.save()
         predict_time = predict_time + timedelta(minutes=15)
 
@@ -26,15 +24,13 @@ def WriteDB_288points(predict_time,y_predict):
         predict_time = predict_time + timedelta(minutes=15)
 
 def WriteDB_288points_Naive(predict_time,y_predict):
+    PredictionResult_288points.objects.filter(DataTime__gte=predict_time).delete()
     for i in range(0,288):
         y_ = y_predict[i]
         if y_<0:
             y_ = 0
-        try:
-            obj = PredictionResult_288points.objects.get(DataTime=predict_time)
-        except PredictionResult_288points.DoesNotExist:
-            obj = PredictionResult_288points(DataTime = predict_time, DataValue = y_)
-        obj.DataValue = y_
+
+        obj = PredictionResult_288points(DataTime = predict_time, DataValue = y_)
         obj.save()
         predict_time = predict_time + timedelta(minutes=15)
 
