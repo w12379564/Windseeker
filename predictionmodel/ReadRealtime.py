@@ -1,10 +1,11 @@
-from predictionmodel.models import RealTime,Config,HistoryData
+from predictionmodel.models import HistoryData,RealTime_GenerationStatus,RealTime_GeneraionData,RealTime_WindTower
+from predictionmodel.models import Config
 from datetime import datetime
 
 def GetGenerationData(nowtime):
     InsertTime = datetime(year=nowtime.year,month=nowtime.month,day=nowtime.day,hour=nowtime.hour,minute=nowtime.minute)
     #print(InsertTime)
-    RtItems = RealTime.objects.filter(DataID__gte = 20001).filter(DataID__lte = 20240)
+    RtItems = RealTime_GeneraionData.objects.filter(DataID__gte = 20001).filter(DataID__lte = 20240)
     for i in range(0,240,10):
         t = InsertTime
         number = i/10+1
@@ -16,22 +17,37 @@ def GetGenerationData(nowtime):
             newrecord = HistoryData(time=t, no=number, power=p, windspeed=wsp)
             newrecord.save()
 
+def GetRealTimePowerSum():
+    RtItems = RealTime_GeneraionData.objects.filter(DataID__gte=20001).filter(DataID__lte=20240)
+    RealTimePowerSum = 0
+    for i in range(0, 240, 10):
+        RealTimePowerSum = RealTimePowerSum + RtItems[i + 1].DataValue
+    #print(RealTimePowerSum)
+    return RealTimePowerSum
+
+
 def GetGenerationStatus():
-    RtItems = RealTime.objects.filter(DataID__gte=30001).filter(DataID__lte=30120)
+    RtItems = RealTime_GenerationStatus.objects.filter(DataID__gte=30001).filter(DataID__lte=30120)
+    RtConfigs = Config.objects.filter(DataID__gte=30001).filter(DataID__lte=30120)
     ret=[]
     for i in range(0,120,5):
-        Status={RtItems[i].config.configname: RtItems[i].DataValue,
-              RtItems[i+1].config.configname: RtItems[i+1].DataValue,
-              RtItems[i+2].config.configname: RtItems[i+2].DataValue,
-              RtItems[i+3].config.configname: RtItems[i+3].DataValue,
-              RtItems[i+4].config.configname: RtItems[i+4].DataValue}
+        Status={RtConfigs[i].configname: RtItems[i].DataValue,
+                RtConfigs[i+1].configname: RtItems[i+1].DataValue,
+                RtConfigs[i+2].configname: RtItems[i+2].DataValue,
+                RtConfigs[i+3].configname: RtItems[i+3].DataValue,
+                RtConfigs[i+4].configname: RtItems[i+4].DataValue}
         ret.append(Status)
     #print(ret)
     return ret
 
 def GetWindTower():
-    RtItems = RealTime.objects.filter(DataID__gte=10001).filter(DataID__lte=10035)
+    RtItems = RealTime_WindTower.objects.filter(DataID__gte=10001).filter(DataID__lte=10056)
+    RtConfigs = Config.objects.filter(DataID__gte=10001).filter(DataID__lte=10056)
+    len1 = len(RtItems)
+    len2 = len(RtConfigs)
+    l = min(len1,len2)
     WindTowerInfo={}
-    for RtItem in RtItems:
-        WindTowerInfo[RtItem.config.configname] = RtItem.DataValue
+    for i in range(l):
+        WindTowerInfo[RtConfigs[i].configname] = RtItems[i].DataValue
+    #print(WindTowerInfo)
     return WindTowerInfo

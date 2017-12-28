@@ -26,12 +26,8 @@ class HistoryDataTest(models.Model):
     windspeed_10m = models.FloatField()
     degree = models.FloatField()
 
-class RealTime(models.Model):
-    DataID = models.IntegerField(primary_key=True)
-    DataValue = models.FloatField()
-
 class Config(models.Model):
-    RealtimeItem = models.OneToOneField(RealTime,on_delete=models.CASCADE,primary_key=True)
+    DataID = models.IntegerField(primary_key=True)
     configname = models.CharField(max_length=20)
 
 class HistoryData(models.Model):
@@ -55,6 +51,22 @@ class PredictionResult_16points(models.Model):
 
 class PredictionResult_288points(models.Model):
     DataTime = models.DateTimeField(primary_key=True)
+    DataValue = models.FloatField()
+
+class RealTime_WindTower(models.Model):
+    DataID = models.IntegerField(primary_key=True)
+    DataValue = models.FloatField()
+
+class RealTime_GeneraionData(models.Model):
+    DataID = models.IntegerField(primary_key=True)
+    DataValue = models.FloatField()
+
+class RealTime_GenerationStatus(models.Model):
+    DataID = models.IntegerField(primary_key=True)
+    DataValue = models.FloatField()
+
+class RealTime_Write(models.Model):
+    DataID = models.IntegerField(primary_key=True)
     DataValue = models.FloatField()
 
 

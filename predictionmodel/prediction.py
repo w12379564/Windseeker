@@ -10,9 +10,9 @@ from predictionmodel.models import HistoryData,PredictionResult_16points,Predict
 from django.db.models import Sum
 from sklearn.preprocessing import PolynomialFeatures
 from predictionmodel.WriteRealtime import WriteDB_16points,WriteDB_288points,WriteDB_288points_Naive,WriteExpect
-from predictionmodel.ReadRealtime import GetGenerationStatus
+from predictionmodel.ReadRealtime import GetGenerationStatus,GetRealTimePowerSum
 
-numbers = [33, 34, 35, 36, 37, 38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54]
+numbers = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24]
 
 
 def train(x_train,y_train):
@@ -103,22 +103,27 @@ def CalExpectPower(): #use realtime windspeed
         elif windspeed >=12:
             ExpectPower.append(2000)
         else:
-            ExpectPower.append(y_expect[0,0])
+            if y_expect[0,0]>0:
+                ExpectPower.append(y_expect[0,0])
+            else:
+                ExpectPower.append(0)
     #print(ExpectPower)
     ExpectSum = 0
     UsableSum = 0
-    LimitSum = 0
+    Capacity = 0
     GenerationStatus = GetGenerationStatus()
     len1=len(ExpectPower)
     len2=len(GenerationStatus)
     len0=min(len1,len2)
     for i in range(len0):
         ExpectSum = ExpectSum + ExpectPower[i]
-        if GenerationStatus[i]['running']==1:
+        if GenerationStatus[i]['stopping']==1:
             UsableSum = UsableSum + ExpectPower[i]
-        if GenerationStatus[i]['waiting']==1:
-            LimitSum = LimitSum + ExpectPower[i]
-    WriteExpect(ExpectSum, UsableSum, LimitSum)
+            Capacity = Capacity + 2000
+
+    LimitSum = ExpectSum - UsableSum
+    RealTimePowerSum = GetRealTimePowerSum()
+    WriteExpect(RealTimePowerSum,Capacity,ExpectSum, UsableSum, LimitSum)
 
 
 def LongTerm_Train(begtime,endtime):
