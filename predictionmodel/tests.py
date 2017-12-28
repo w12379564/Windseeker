@@ -24,7 +24,7 @@ from predictionmodel.ReadRealtime import GetGenerationData,GetGenerationStatus,G
 from predictionmodel.WriteRealtime import WriteExpect,WriteWindTower
 from predictionmodel.dataPreprocess import Get_Realtime_WindSpeed
 from predictionmodel.tasks import WindseekerTasks
-from predictionmodel.models import RealTime_GeneraionData,RealTime_GenerationStatus,RealTime_WindTower,RealTime_Write
+from predictionmodel.models import RealTime_GenerationData,RealTime_GenerationStatus,RealTime_WindTower,RealTime_Write
 from predictionmodel.models import Config
 from predictionmodel.ReadRealtime import GetRealTimePowerSum
 # Create your tests here.
@@ -224,7 +224,7 @@ def init_realtime():
         r.save()
 
     for i in range(20001,20241):
-        r = RealTime_GeneraionData(DataID=i,DataValue=i)
+        r = RealTime_GenerationData(DataID=i, DataValue=i)
         r.save()
 
     for i in range(30001,30121):

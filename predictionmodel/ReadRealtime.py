@@ -1,11 +1,11 @@
-from predictionmodel.models import HistoryData,RealTime_GenerationStatus,RealTime_GeneraionData,RealTime_WindTower
+from predictionmodel.models import HistoryData,RealTime_GenerationStatus,RealTime_GenerationData,RealTime_WindTower
 from predictionmodel.models import Config
 from datetime import datetime
 
 def GetGenerationData(nowtime):
     InsertTime = datetime(year=nowtime.year,month=nowtime.month,day=nowtime.day,hour=nowtime.hour,minute=nowtime.minute)
     #print(InsertTime)
-    RtItems = RealTime_GeneraionData.objects.filter(DataID__gte = 20001).filter(DataID__lte = 20240)
+    RtItems = RealTime_GenerationData.objects.filter(DataID__gte = 20001).filter(DataID__lte = 20240)
     for i in range(0,240,10):
         t = InsertTime
         number = i/10+1
@@ -18,7 +18,7 @@ def GetGenerationData(nowtime):
             newrecord.save()
 
 def GetRealTimePowerSum():
-    RtItems = RealTime_GeneraionData.objects.filter(DataID__gte=20001).filter(DataID__lte=20240)
+    RtItems = RealTime_GenerationData.objects.filter(DataID__gte=20001).filter(DataID__lte=20240)
     RealTimePowerSum = 0
     for i in range(0, 240, 10):
         RealTimePowerSum = RealTimePowerSum + RtItems[i + 1].DataValue
