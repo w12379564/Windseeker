@@ -104,7 +104,7 @@ def CalExpectPower(): #use realtime windspeed
             ExpectPower.append(2000)
         else:
             ExpectPower.append(y_expect[0,0])
-    print(ExpectPower)
+    #print(ExpectPower)
     ExpectSum = 0
     UsableSum = 0
     LimitSum = 0
