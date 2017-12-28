@@ -88,8 +88,8 @@ def CalcExpectValue_WriteRT():
 @shared_task
 def WindseekerTasks():
     nowtime = datetime.today()
-    #timestap = datetime(year=nowtime.year, month=nowtime.month, day=nowtime.day,hour=nowtime.hour,minute=nowtime.minute)
-    timestap = datetime(year=nowtime.year-1, month=nowtime.month-6, day=nowtime.day,hour=nowtime.hour,minute=nowtime.minute)
+    timestap = datetime(year=nowtime.year, month=nowtime.month, day=nowtime.day,hour=nowtime.hour,minute=nowtime.minute)
+    #timestap = datetime(year=nowtime.year-1, month=nowtime.month-6, day=nowtime.day,hour=nowtime.hour,minute=nowtime.minute)
     #Write WindTower data
     WriteWindTower()
     #from realtime to db
