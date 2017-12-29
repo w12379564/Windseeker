@@ -14,13 +14,19 @@ from datetime import datetime,timedelta
 import predictionmodel.getData
 from predictionmodel.tasks import predictTask,add,trainTask,getDataTask
 from celery.schedules import crontab
-from predictionmodel.dataPreprocess import Db2ShortTermData,Db2FittingData,Db2LongTermData,NetDB2Weather
+from predictionmodel.dataPreprocess import Db2ShortTermData,Db2FittingData,Db2LongTermData,NetDB2Weather,GetX_Predict_LongTerm_Naive
 from predictionmodel.prediction import ShortTerm_Train,ShortTerm_Predictts,FittingCurve,CalExpectPower,ShortTerm_Predict,LongTerm_Train,LongTerm_Predict,LongTerm_Predict_Naive
 from predictionmodel.models import HistoryData
 from django.db.models import Sum
 import numpy as np
-from predictionmodel.models import RealTime,Config,PredictionResult_16points,WeatherData,PredictionResult_288points
-from predictionmodel.Realtime2DB import GetGenerationData,GetGenerationInfo
+from predictionmodel.models import PredictionResult_16points,WeatherData,PredictionResult_288points
+from predictionmodel.ReadRealtime import GetGenerationData,GetGenerationStatus,GetWindTower
+from predictionmodel.WriteRealtime import WriteExpect,WriteWindTower
+from predictionmodel.dataPreprocess import Get_Realtime_WindSpeed
+from predictionmodel.tasks import WindseekerTasks
+from predictionmodel.models import RealTime_GenerationData,RealTime_GenerationStatus,RealTime_WindTower,RealTime_Write
+from predictionmodel.models import Config
+from predictionmodel.ReadRealtime import GetRealTimePowerSum
 # Create your tests here.
 
 def testGetdata():
@@ -58,28 +64,6 @@ def ShortTerm_test():
         print(y_true)
         print(y)
         nowtime = nowtime + timedelta(hours=1)
-
-def init_realtime():
-    for i in range(40001,40019):
-        r = RealTime(DataID=i,DataValue=i)
-        r.save()
-
-def init_config_gendata():
-    name = ['windspeed','power','reactivate power','voltage','current','frequency','null','null','null','null']
-    for i in range(20001, 20241):
-        rtItem = RealTime.objects.get(DataID=i)
-        idx = (i-20001)%10
-
-        r = Config(RealtimeItem = rtItem,configname = name[idx])
-        r.save()
-
-def init_config_geninfo():
-    name = ['stopping','running','error','waiting','null']
-    for i in range(30001,30121):
-        rtItem = RealTime.objects.get(DataID=i)
-        idx = (i - 30001) % 5
-        r = Config(RealtimeItem=rtItem, configname=name[idx])
-        r.save()
 
 def shortTerm_test():
     nowtime = datetime(year=2016,month=5,day=1,hour=6,minute=0)
@@ -155,7 +139,104 @@ def plot_longterm(begtime,endtime):
     ax.plot(y_true, 'r')
     plt.show()
 
+def init_config_windspeed():
+    name = ['windspeed_real_','windspeed_avg_','windspeed_max_','windspeed_min_','windspeed_sigma_']
+    #100m
+    idx=10001
+    for i in range(0,5):
+        CONFIG = Config(DataID=idx+i,configname=name[i]+'100m')
+        CONFIG.save()
+    #90m
+    idx=10006
+    for i in range(0,5):
+        CONFIG = Config(DataID=idx+i,configname=name[i]+'90m')
+        CONFIG.save()
+    #80m
+    idx=10011
+    for i in range(0,5):
+        CONFIG = Config(DataID=idx+i,configname=name[i]+'80m')
+        CONFIG.save()
+    #70m
+    idx=10016
+    for i in range(0,5):
+        CONFIG = Config(DataID=idx+i,configname=name[i]+'70m')
+        CONFIG.save()
+    #50m
+    idx=10021
+    for i in range(0,5):
+        CONFIG = Config(DataID=idx+i,configname=name[i]+'50m')
+        CONFIG.save()
+    #30m
+    idx=10026
+    for i in range(0,5):
+        CONFIG = Config(DataID=idx+i,configname=name[i]+'30m')
+        CONFIG.save()
+    #10m
+    idx=10031
+    for i in range(0,5):
+        CONFIG = Config(DataID=idx+i,configname=name[i]+'10m')
+        CONFIG.save()
+
+
+def init_config_winddir():
+    name = ['dir_real_', 'dir_avg_', 'dir_max_', 'dir_min_', 'dir_sigma_']
+    CONFIG = Config(DataID=10036, configname='null')
+    CONFIG.save()
+    #100m
+    idx=10037
+    for i in range(0,5):
+        CONFIG = Config(DataID=idx+i,configname=name[i]+'100m')
+        CONFIG.save()
+    #90m
+    idx=10042
+    for i in range(0,5):
+        CONFIG = Config(DataID=idx+i,configname=name[i]+'90m')
+        CONFIG.save()
+    #80m
+    idx=10047
+    for i in range(0,5):
+        CONFIG = Config(DataID=idx+i,configname=name[i]+'80m')
+        CONFIG.save()
+    #10m
+    idx=10052
+    for i in range(0,5):
+        CONFIG = Config(DataID=idx+i,configname=name[i]+'10m')
+        CONFIG.save()
+
+
+def init_config_gendata():
+    name = ['windspeed','power','reactivate power','voltage','current','frequency','null','null','null','null']
+    for i in range(20001, 20241):
+        idx = (i-20001)%10
+        r = Config(DataID = i,configname = name[idx])
+        r.save()
+
+def init_config_genstatus():
+    name = ['stopping','running','error','waiting','null']
+    for i in range(30001,30121):
+        idx = (i - 30001) % 5
+        r = Config(DataID = i,configname = name[idx])
+        r.save()
+
+def init_realtime():
+    for i in range(10001,10057):
+        r = RealTime_WindTower(DataID=i,DataValue=i)
+        r.save()
+
+    for i in range(20001,20241):
+        r = RealTime_GenerationData(DataID=i, DataValue=i)
+        r.save()
+
+    for i in range(30001,30121):
+        r = RealTime_GenerationStatus(DataID=i,DataValue=i)
+        r.save()
+
+    for i in range(40001,40019):
+        r = RealTime_Write(DataID=i,DataValue=i)
+        r.save()
+
 # Run here.
-begtime = datetime(year=2016, month=10, day=8, hour=6, minute=15)
+begtime = datetime(year=2016, month=6, day=24, hour=19, minute=0)
 endtime = begtime + timedelta(days=10)
-plot_shortterm()
+nowtime = datetime(year=2016, month=12, day=30, hour=22, minute=0)
+init_config_genstatus()

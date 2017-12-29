@@ -2,7 +2,7 @@ import numpy as np
 from predictionmodel.models import weathertest
 from django.db.models import Sum
 from datetime import datetime,timedelta
-from predictionmodel.models import HistoryData,WeatherData
+from predictionmodel.models import HistoryData,WeatherData,RealTime_WindTower
 from django.db.models import Sum,Max
 
 def file2dataset(filename,size,shuffleornot):
@@ -134,11 +134,36 @@ def GetX_Predict_LongTerm_Naive(nowtime):
     et = bt + timedelta(days=3)
     x_sub = WeatherData.objects.filter(DataID=1).filter(DataTime__gte=bt).filter(DataTime__lt=et).values_list(
             "DataValue", flat=True).order_by('DataTime')
-    return list(x_sub)
+
+    ret = list(x_sub)
+    while len(ret)<288:
+        if len(ret)>0:
+            ret.append(ret[-1])
+        else:
+            ret.append(0)
+
+    if len(ret)>288:
+        ret = ret[-288:]
+    return ret
 
 def GetX_Predict_ShortTerm(nowtime):
     nowtime = datetime(year=nowtime.year, month=nowtime.month, day=nowtime.day,hour=nowtime.hour,minute=nowtime.minute)
     endtime = nowtime
     begtime = endtime - timedelta(hours=4)
     x = HistoryData.objects.filter(time__gte=begtime).filter(time__lt=endtime).values_list('time').annotate(Power_Sum=Sum('power')).values_list('Power_Sum', flat=True).order_by('time')
-    return list(x)
+    ret=list(x)
+    while len(ret)<16:
+        if len(ret)>0:
+            ret.append(ret[-1])
+        else:
+            ret.append(0)
+
+    if len(ret)>16:
+        ret = ret[-16:]
+    return ret
+
+def Get_Realtime_WindSpeed():
+    #70m windspeed avg
+    ret = RealTime_WindTower.objects.filter(DataID=10017).values_list('DataValue',flat=True)
+    ret = float(ret[0])
+    return ret

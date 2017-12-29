@@ -6,6 +6,9 @@ from predictionmodel.models import resulttest,celerytest
 import predictionmodel.getData
 from . import models
 from celery import shared_task
+from predictionmodel.prediction import ShortTerm_Predict,LongTerm_Predict_Naive,CalExpectPower
+from predictionmodel.ReadRealtime import GetGenerationData
+from predictionmodel.WriteRealtime import WriteWindTower
 
 @shared_task
 def trainTask():
@@ -58,3 +61,42 @@ def writedbtest():
     t = datetime.now()
     r = celerytest(time=t)
     r.save()
+
+@shared_task
+def Predict():
+    nowtime = datetime.today()
+    #timestap = datetime(year=nowtime.year, month=nowtime.month, day=nowtime.day,hour=nowtime.hour,minute=nowtime.minute)
+    timestap = datetime(year=nowtime.year-1, month=nowtime.month-6, day=nowtime.day,hour=nowtime.hour,minute=nowtime.minute)
+    ShortTerm_Predict(timestap)
+    LongTerm_Predict_Naive(timestap)
+
+
+@shared_task
+def GetData():
+    nowtime = datetime.today()
+    #timestap = datetime(year=nowtime.year, month=nowtime.month, day=nowtime.day,hour=nowtime.hour,minute=nowtime.minute)
+    timestap = datetime(year=nowtime.year-1, month=nowtime.month-6, day=nowtime.day,hour=nowtime.hour,minute=nowtime.minute)
+    GetGenerationData(timestap)
+    print("done")
+
+
+@shared_task
+def CalcExpectValue_WriteRT():
+    WriteWindTower()
+    CalExpectPower()
+
+@shared_task
+def WindseekerTasks():
+    nowtime = datetime.today()
+    timestap = datetime(year=nowtime.year, month=nowtime.month, day=nowtime.day,hour=nowtime.hour,minute=nowtime.minute)
+    #timestap = datetime(year=nowtime.year-1, month=nowtime.month-6, day=nowtime.day,hour=nowtime.hour,minute=nowtime.minute)
+    #Write WindTower data
+    WriteWindTower()
+    #from realtime to db
+    GetGenerationData(timestap)
+
+    CalExpectPower()
+
+    ShortTerm_Predict(timestap)
+
+    LongTerm_Predict_Naive(timestap)

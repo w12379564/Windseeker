@@ -4,14 +4,15 @@ from sklearn.linear_model import LinearRegression
 from sklearn.linear_model import RidgeCV
 from sklearn.externals import joblib
 from datetime import datetime,timedelta
-from predictionmodel.dataPreprocess import Db2ShortTermData,Db2FittingData,Db2LongTermData,GetX_Predict_LongTerm,GetX_Predict_LongTerm_Naive,GetX_Predict_ShortTerm
+from predictionmodel.dataPreprocess import Db2ShortTermData,Db2FittingData,Db2LongTermData,GetX_Predict_LongTerm,GetX_Predict_LongTerm_Naive,GetX_Predict_ShortTerm,Get_Realtime_WindSpeed
 import numpy as np
 from predictionmodel.models import HistoryData,PredictionResult_16points,PredictionResult_288points
 from django.db.models import Sum
 from sklearn.preprocessing import PolynomialFeatures
-from predictionmodel.Result2DB import WriteDB_16points,WriteDB_288points,WriteDB_288points_Naive
+from predictionmodel.WriteRealtime import WriteDB_16points,WriteDB_288points,WriteDB_288points_Naive,WriteExpect
+from predictionmodel.ReadRealtime import GetGenerationStatus,GetRealTimePowerSum
 
-numbers = [33, 34, 35, 36, 37, 38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54]
+numbers = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24]
 
 
 def train(x_train,y_train):
@@ -88,8 +89,9 @@ def FittingCurve():
         regr.fit(x_5, y)
         joblib.dump(regr, 'predictionmodel/model/FittingCurve/' + str(number) + '.model')
 
-def CalExpectPower(windspeed):
-    ret=[]
+def CalExpectPower(): #use realtime windspeed
+    windspeed=Get_Realtime_WindSpeed()
+    ExpectPower=[]
     fz = PolynomialFeatures(degree=5)
     wsp = np.array([[windspeed]])
     wsp_5 = fz.fit_transform(wsp)
@@ -97,12 +99,32 @@ def CalExpectPower(windspeed):
         regr = joblib.load('predictionmodel/model/FittingCurve/' + str(number) + '.model')
         y_expect = regr.predict(wsp_5)
         if windspeed <= 3:
-            ret.append(0)
+            ExpectPower.append(0)
         elif windspeed >=12:
-            ret.append(2000)
+            ExpectPower.append(2000)
         else:
-            ret.append(y_expect[0,0])
-    print(ret)
+            if y_expect[0,0]>0:
+                ExpectPower.append(y_expect[0,0])
+            else:
+                ExpectPower.append(0)
+    #print(ExpectPower)
+    ExpectSum = 0
+    UsableSum = 0
+    Capacity = 0
+    GenerationStatus = GetGenerationStatus()
+    len1=len(ExpectPower)
+    len2=len(GenerationStatus)
+    len0=min(len1,len2)
+    for i in range(len0):
+        ExpectSum = ExpectSum + ExpectPower[i]
+        if GenerationStatus[i]['stopping']==1:
+            UsableSum = UsableSum + ExpectPower[i]
+            Capacity = Capacity + 2000
+
+    LimitSum = ExpectSum - UsableSum
+    RealTimePowerSum = GetRealTimePowerSum()
+    WriteExpect(RealTimePowerSum,Capacity,ExpectSum, UsableSum, LimitSum)
+
 
 def LongTerm_Train(begtime,endtime):
     dataset = Db2LongTermData(begtime,endtime)
