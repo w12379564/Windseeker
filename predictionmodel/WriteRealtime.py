@@ -3,7 +3,8 @@ from datetime import datetime,timedelta
 from predictionmodel.ReadRealtime import GetWindTower
 
 def WriteDB_16points(predict_time,y_predict):
-    PredictionResult_16points.objects.filter(DataTime__gte = predict_time).delete()
+    nowtime = predict_time - timedelta(minutes=15)
+    PredictionResult_16points.objects.filter(DataTime__gt = nowtime).delete()
     for i in range(0,16):
         y_ = y_predict[0,i]
         if y_<0:
@@ -24,7 +25,8 @@ def WriteDB_288points(predict_time,y_predict):
         predict_time = predict_time + timedelta(minutes=15)
 
 def WriteDB_288points_Naive(predict_time,y_predict):
-    PredictionResult_288points.objects.filter(DataTime__gte=predict_time).delete()
+    nowtime = predict_time - timedelta(minutes=15)
+    PredictionResult_288points.objects.filter(DataTime__gt=nowtime).delete()
     for i in range(0,288):
         y_ = y_predict[i]
         if y_<0:
