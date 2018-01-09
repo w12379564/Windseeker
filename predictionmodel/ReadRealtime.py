@@ -17,6 +17,17 @@ def GetGenerationData(nowtime):
             newrecord = HistoryData(time=t, no=number, power=p, windspeed=wsp)
             newrecord.save()
 
+#If a generation has a positive power output, we think it is running
+def GetRealTimeStatus():
+    RunningStatus = []
+    RtItems = RealTime_GenerationData.objects.filter(DataID__gte=20001).filter(DataID__lte=20240)
+    for i in range(0, 240, 10):
+        if RtItems[i + 1].DataValue > 0:
+            RunningStatus.append(1)
+        else:
+            RunningStatus.append(0)
+    return RunningStatus
+
 def GetRealTimePowerSum():
     RtItems = RealTime_GenerationData.objects.filter(DataID__gte=20001).filter(DataID__lte=20240)
     RealTimePowerSum = 0
