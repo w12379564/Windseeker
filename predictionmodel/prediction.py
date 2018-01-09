@@ -160,6 +160,8 @@ def LongTerm_Predict_Naive(nowtime):
         powersum=0
         for number in numbers:
             powersum = powersum + regr[number].predict(wsp_5)
+        if powersum < 0:
+            powersum = 0
         y_predict.append(powersum)
 
     predict_time = nowtime + timedelta(minutes=15)
