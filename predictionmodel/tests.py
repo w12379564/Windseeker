@@ -26,7 +26,7 @@ from predictionmodel.dataPreprocess import Get_Realtime_WindSpeed
 from predictionmodel.tasks import WindseekerTasks
 from predictionmodel.models import RealTime_GenerationData,RealTime_GenerationStatus,RealTime_WindTower,RealTime_Write
 from predictionmodel.models import Config
-from predictionmodel.ReadRealtime import GetRealTimePowerSum,GetRealTimeStatus
+from predictionmodel.ReadRealtime import GetRealTimePowerSum,GetRealTimeStatus,GetGenerationData
 from predictionmodel import Config_init
 # Create your tests here.
 
@@ -243,4 +243,6 @@ def Init_Config():
     Config_init.init_config_genstatus()
 
 # Run here.
-Init_Config()
+nowtime = datetime.today()
+ret=GetWindTower()
+print(ret)
