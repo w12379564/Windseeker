@@ -28,7 +28,7 @@ class HistoryDataTest(models.Model):
 
 class Config(models.Model):
     DataID = models.IntegerField(primary_key=True)
-    configname = models.CharField(max_length=20)
+    configname = models.CharField(max_length=30)
 
 class HistoryData(models.Model):
     time = models.DateTimeField()

@@ -27,6 +27,7 @@ from predictionmodel.tasks import WindseekerTasks
 from predictionmodel.models import RealTime_GenerationData,RealTime_GenerationStatus,RealTime_WindTower,RealTime_Write
 from predictionmodel.models import Config
 from predictionmodel.ReadRealtime import GetRealTimePowerSum,GetRealTimeStatus
+from predictionmodel import Config_init
 # Create your tests here.
 
 def testGetdata():
@@ -235,8 +236,11 @@ def init_realtime():
         r = RealTime_Write(DataID=i,DataValue=i)
         r.save()
 
+def Init_Config():
+    Config_init.init_config_windspeed()
+    Config_init.init_config_winddir()
+    Config_init.init_config_gendata()
+    Config_init.init_config_genstatus()
+
 # Run here.
-begtime = datetime(year=2016, month=6, day=24, hour=19, minute=0)
-endtime = begtime + timedelta(days=10)
-nowtime = datetime(year=2018, month=12, day=30, hour=22, minute=0)
-GetGenerationData(nowtime)
+Init_Config()
