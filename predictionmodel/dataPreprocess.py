@@ -2,7 +2,7 @@ import numpy as np
 from predictionmodel.models import weathertest
 from django.db.models import Sum
 from datetime import datetime,timedelta
-from predictionmodel.models import HistoryData,WeatherData,RealTime_WindTower
+from predictionmodel.models import HistoryData,WeatherData,RealTime_Read,Config
 from django.db.models import Sum,Max
 
 def file2dataset(filename,size,shuffleornot):
@@ -164,6 +164,7 @@ def GetX_Predict_ShortTerm(nowtime):
 
 def Get_Realtime_WindSpeed():
     #70m windspeed avg
-    ret = RealTime_WindTower.objects.filter(DataID=10017).values_list('DataValue',flat=True)
+    ID = Config.objects.get(configname = '70m_windspeed_avg').DataID
+    ret = RealTime_Read.objects.filter(DataID=ID).values_list('DataValue',flat=True)
     ret = float(ret[0])
     return ret

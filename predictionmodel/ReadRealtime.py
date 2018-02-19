@@ -1,19 +1,19 @@
-from predictionmodel.models import HistoryData,RealTime_GenerationStatus,RealTime_GenerationData,RealTime_WindTower
+from predictionmodel.models import HistoryData,RealTime_Read
 from predictionmodel.models import Config
 from datetime import datetime
 from django.db.models import Q
 
 #Generation number
-GenerationNumber = 24
+GenerationNumber = 62
 
 def GetGenerationData(nowtime):
     InsertTime = datetime(year=nowtime.year,month=nowtime.month,day=nowtime.day,hour=nowtime.hour,minute=nowtime.minute)
     #print(InsertTime)
     for no in range(1,GenerationNumber+1):
-        wsp_id = Config.objects.get(configname = 'windspeed#' + str(no)).DataID
-        power_id = Config.objects.get(configname = 'power#' + str(no)).DataID
-        wsp = RealTime_GenerationData.objects.get(DataID=wsp_id).DataValue/10000
-        power = RealTime_GenerationData.objects.get(DataID=power_id).DataValue
+        wsp_id = Config.objects.get(configname =str(no) + '#windspeed').DataID
+        power_id = Config.objects.get(configname =str(no) + '#power').DataID
+        wsp = RealTime_Read.objects.get(DataID=wsp_id).DataValue/10000
+        power = RealTime_Read.objects.get(DataID=power_id).DataValue
         try:
             newrecord = HistoryData.objects.get(time=InsertTime, no=no)
         except HistoryData.DoesNotExist:
@@ -25,8 +25,8 @@ def GetRealTimeStatus():
     RunningStatus = []
     #RtItems = RealTime_GenerationData.objects.filter(DataID__gte=20001).filter(DataID__lte=20240)
     for no in range(1, GenerationNumber + 1):
-        power_id = Config.objects.get(configname='power#' + str(no)).DataID
-        power = RealTime_GenerationData.objects.get(DataID=power_id).DataValue
+        power_id = Config.objects.get(configname=str(no) + '#power').DataID
+        power = RealTime_Read.objects.get(DataID=power_id).DataValue
         if power > 0:
             RunningStatus.append(1)
         else:
@@ -37,15 +37,15 @@ def GetRealTimePowerSum():
     #RtItems = RealTime_GenerationData.objects.filter(DataID__gte=20001).filter(DataID__lte=20240)
     RealTimePowerSum = 0
     for no in range(1, GenerationNumber + 1):
-        power_id = Config.objects.get(configname='power#' + str(no)).DataID
-        power = RealTime_GenerationData.objects.get(DataID=power_id).DataValue
+        power_id = Config.objects.get(configname=str(no) + '#power').DataID
+        power = RealTime_Read.objects.get(DataID=power_id).DataValue
         RealTimePowerSum = RealTimePowerSum + power
     #print(RealTimePowerSum)
     return RealTimePowerSum
 
 #useless
 def GetGenerationStatus():
-    RtItems = RealTime_GenerationStatus.objects.filter(DataID__gte=30001).filter(DataID__lte=30120)
+    RtItems = RealTime_Read.objects.filter(DataID__gte=30001).filter(DataID__lte=30120)
     RtConfigs = Config.objects.filter(DataID__gte=30001).filter(DataID__lte=30120)
     ret=[]
     for i in range(0,120,5):
@@ -59,8 +59,8 @@ def GetGenerationStatus():
     return ret
 
 def GetWindTower():
-    WindTowerItems = Config.objects.filter(Q(configname__contains = 'windspeed_')| Q(configname__contains = 'dir'))
+    WindTowerItems = Config.objects.filter(Q(configname__contains = '_windspeed')| Q(configname__contains = '_dir'))
     WindTowerInfo={}
     for items in WindTowerItems:
-        WindTowerInfo[items.configname] = RealTime_WindTower.objects.get(DataID = items.DataID).DataValue
+        WindTowerInfo[items.configname] = RealTime_Read.objects.get(DataID = items.DataID).DataValue
     return WindTowerInfo

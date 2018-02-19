@@ -78,7 +78,7 @@ WSGI_APPLICATION = 'Windseeker.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'Windseeker',
+        'NAME': 'Windseeker_Donghai',
         'USER': 'root',
         'PASSWORD': 'mysql81620861',
         'HOST': '127.0.0.1',
