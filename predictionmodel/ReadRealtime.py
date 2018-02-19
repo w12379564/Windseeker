@@ -5,12 +5,12 @@ from datetime import datetime
 def GetGenerationData(nowtime):
     InsertTime = datetime(year=nowtime.year,month=nowtime.month,day=nowtime.day,hour=nowtime.hour,minute=nowtime.minute)
     #print(InsertTime)
-    RtItems = RealTime_GenerationData.objects.filter(DataID__gte = 20001).filter(DataID__lte = 20240)
+    #RtItems = RealTime_GenerationData.objects.filter(DataID__gte = 20001).filter(DataID__lte = 20240)
     for i in range(0,240,10):
         t = InsertTime
         number = i/10+1
-        wsp = RtItems[i].DataValue
-        p = RtItems[i + 1].DataValue
+        wsp = RealTime_GenerationData.objects.get(DataID=20001+i).DataValue/10000
+        p = RealTime_GenerationData.objects.get(DataID=20002+i).DataValue
         try:
             newrecord = HistoryData.objects.get(time=t,no=number)
         except HistoryData.DoesNotExist:
@@ -20,19 +20,21 @@ def GetGenerationData(nowtime):
 #If a generation has a positive power output, we think it is running
 def GetRealTimeStatus():
     RunningStatus = []
-    RtItems = RealTime_GenerationData.objects.filter(DataID__gte=20001).filter(DataID__lte=20240)
+    #RtItems = RealTime_GenerationData.objects.filter(DataID__gte=20001).filter(DataID__lte=20240)
     for i in range(0, 240, 10):
-        if RtItems[i + 1].DataValue > 0:
+        p = RealTime_GenerationData.objects.get(DataID=20002 + i).DataValue
+        if p > 0:
             RunningStatus.append(1)
         else:
             RunningStatus.append(0)
     return RunningStatus
 
 def GetRealTimePowerSum():
-    RtItems = RealTime_GenerationData.objects.filter(DataID__gte=20001).filter(DataID__lte=20240)
+    #RtItems = RealTime_GenerationData.objects.filter(DataID__gte=20001).filter(DataID__lte=20240)
     RealTimePowerSum = 0
     for i in range(0, 240, 10):
-        RealTimePowerSum = RealTimePowerSum + RtItems[i + 1].DataValue
+        p = RealTime_GenerationData.objects.get(DataID=20002 + i).DataValue
+        RealTimePowerSum = RealTimePowerSum + p
     #print(RealTimePowerSum)
     return RealTimePowerSum
 

@@ -238,6 +238,5 @@ def init_realtime():
 # Run here.
 begtime = datetime(year=2016, month=6, day=24, hour=19, minute=0)
 endtime = begtime + timedelta(days=10)
-nowtime = datetime(year=2016, month=12, day=30, hour=22, minute=0)
-ret=GetRealTimeStatus()
-print(ret)
+nowtime = datetime(year=2018, month=12, day=30, hour=22, minute=0)
+GetGenerationData(nowtime)
