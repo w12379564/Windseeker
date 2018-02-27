@@ -60,7 +60,7 @@ def WriteWindTower():
     RealTime_Write.objects.filter(DataID=40015).update(DataValue=WindTowerInfo['10m_dir_avg'])
     #temp,press,humidity
     #TO DO...
-    RealTime_Write.objects.filter(DataID=40016).update(DataValue=0)
-    RealTime_Write.objects.filter(DataID=40017).update(DataValue=0)
-    RealTime_Write.objects.filter(DataID=40018).update(DataValue=0)
+    RealTime_Write.objects.filter(DataID=40016).update(DataValue=WindTowerInfo['10m_temp_real'])
+    RealTime_Write.objects.filter(DataID=40017).update(DataValue=WindTowerInfo['10m_hum_real'])
+    RealTime_Write.objects.filter(DataID=40018).update(DataValue=WindTowerInfo['10m_press_real'])
 

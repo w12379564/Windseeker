@@ -59,7 +59,9 @@ def GetGenerationStatus():
     return ret
 
 def GetWindTower():
-    WindTowerItems = Config.objects.filter(Q(configname__contains = '_windspeed')| Q(configname__contains = '_dir'))
+    WindTowerItems = Config.objects.filter(Q(configname__contains = '_windspeed')| Q(configname__contains = '_dir')
+                                           | Q(configname__contains='_temp') | Q(configname__contains = '_hum')
+                                           | Q(configname__contains='_press'))
     WindTowerInfo={}
     for items in WindTowerItems:
         WindTowerInfo[items.configname] = RealTime_Read.objects.get(DataID = items.DataID).DataValue
