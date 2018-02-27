@@ -226,6 +226,5 @@ def init_realtime():
         r.save()
 
 # Run here.
-nowtime = datetime.today()
-ret=Get_Realtime_WindSpeed()
-print(ret)
+os.chdir('/home/donghai/project/Windseeker')
+FittingCurve()

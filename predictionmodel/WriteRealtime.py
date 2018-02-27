@@ -44,20 +44,20 @@ def WriteExpect(RealTimePowerSum,Capacity,ExpectSum, UsableSum, LimitSum):
 def WriteWindTower():
     WindTowerInfo = GetWindTower()
     #Generation Height
-    RealTime_Write.objects.filter(DataID=40006).update(DataValue=WindTowerInfo['windspeed_avg_80m'])
-    RealTime_Write.objects.filter(DataID=40007).update(DataValue=WindTowerInfo['dir_avg_80m'])
+    RealTime_Write.objects.filter(DataID=40006).update(DataValue=WindTowerInfo['80m_windspeed_avg'])
+    RealTime_Write.objects.filter(DataID=40007).update(DataValue=WindTowerInfo['80m_dir_avg'])
     #10m
-    RealTime_Write.objects.filter(DataID=40008).update(DataValue=WindTowerInfo['windspeed_avg_10m'])
-    RealTime_Write.objects.filter(DataID=40009).update(DataValue=WindTowerInfo['dir_avg_10m'])
+    RealTime_Write.objects.filter(DataID=40008).update(DataValue=WindTowerInfo['10m_windspeed_avg'])
+    RealTime_Write.objects.filter(DataID=40009).update(DataValue=WindTowerInfo['10m_dir_avg'])
     #30m
-    RealTime_Write.objects.filter(DataID=40010).update(DataValue=WindTowerInfo['windspeed_avg_30m'])
-    RealTime_Write.objects.filter(DataID=40011).update(DataValue=WindTowerInfo['dir_avg_10m'])
+    RealTime_Write.objects.filter(DataID=40010).update(DataValue=WindTowerInfo['30m_windspeed_avg'])
+    RealTime_Write.objects.filter(DataID=40011).update(DataValue=WindTowerInfo['10m_dir_avg'])
     #50m
-    RealTime_Write.objects.filter(DataID=40012).update(DataValue=WindTowerInfo['windspeed_avg_50m'])
-    RealTime_Write.objects.filter(DataID=40013).update(DataValue=WindTowerInfo['dir_avg_10m'])
+    RealTime_Write.objects.filter(DataID=40012).update(DataValue=WindTowerInfo['50m_windspeed_avg'])
+    RealTime_Write.objects.filter(DataID=40013).update(DataValue=WindTowerInfo['10m_dir_avg'])
     #70m
-    RealTime_Write.objects.filter(DataID=40014).update(DataValue=WindTowerInfo['windspeed_avg_70m'])
-    RealTime_Write.objects.filter(DataID=40015).update(DataValue=WindTowerInfo['dir_avg_80m'])
+    RealTime_Write.objects.filter(DataID=40014).update(DataValue=WindTowerInfo['70m_windspeed_avg'])
+    RealTime_Write.objects.filter(DataID=40015).update(DataValue=WindTowerInfo['10m_dir_avg'])
     #temp,press,humidity
     #TO DO...
     RealTime_Write.objects.filter(DataID=40016).update(DataValue=0)
