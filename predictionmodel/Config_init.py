@@ -2,7 +2,7 @@ from predictionmodel.models import Config
 import pandas as pd
 
 def init_config_windtower():
-    df = pd.read_excel('/home/ganyuxiang/donghai_config_windtower.xlsx')
+    df = pd.read_excel('/home/futuregadget013/donghai_config_windtower.xlsx')
     df.columns = ['ID', 'description', 'unit', 'category', 'frequency']
     for row in df.itertuples():
         ID = int(row.ID)
@@ -24,7 +24,7 @@ def init_config_windtower():
 
 
 def init_config_generation():
-    df = pd.read_excel('/home/ganyuxiang/donghai_config_generations.xlsx')
+    df = pd.read_excel('/home/futuregadget013/donghai_config_generations.xlsx')
     df.columns = ['ID', 'description', 'unit', 'category', 'frequency']
     for row in df.itertuples():
         ID = int(row.ID)

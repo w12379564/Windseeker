@@ -226,6 +226,4 @@ def init_realtime():
         r.save()
 
 # Run here.
-nowtime = datetime.today()
-ret=Get_Realtime_WindSpeed()
-print(ret)
+init_realtime()
