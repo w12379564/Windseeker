@@ -17,6 +17,7 @@ def read_xlsx(inputFile):
 def read_xlsx1(inputFile):
     df = pd.read_excel(inputFile)
     df.columns=['time','no','power','windspeed']
+    df = df.dropna(how='any')
     for row in df.itertuples():
         t=str(row.time)
         t=t.replace('/','-')

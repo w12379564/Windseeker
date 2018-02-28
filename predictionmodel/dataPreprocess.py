@@ -79,7 +79,8 @@ def Db2ShortTermData(begtime,endtime):
 def Db2FittingData(number):
     qtest=HistoryData.objects.filter(no=number).values_list('windspeed').annotate(MaxPower=Max('power')).order_by('windspeed')
     #print(qtest.query)
-    return np.array(list(qtest))
+    ret = list(qtest)
+    return ret
 
 def Db2LongTermData(begtime,endtime):
     dataset = {'x_train': [], 'y_train': []}

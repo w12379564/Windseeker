@@ -82,6 +82,8 @@ def FittingCurve():
     fz = PolynomialFeatures(degree=5)
     for number in numbers:
         dataset=Db2FittingData(number)
+        if len(dataset) == 0: continue
+        dataset = np.array(dataset)
         x=dataset[:,0]
         y=dataset[:,1]
         x = x.reshape(-1, 1)
