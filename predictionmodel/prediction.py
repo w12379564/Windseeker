@@ -10,9 +10,11 @@ from predictionmodel.models import HistoryData,PredictionResult_16points,Predict
 from django.db.models import Sum
 from sklearn.preprocessing import PolynomialFeatures
 from predictionmodel.WriteRealtime import WriteDB_16points,WriteDB_288points,WriteDB_288points_Naive,WriteExpect
-from predictionmodel.ReadRealtime import GetGenerationStatus,GetRealTimePowerSum
+from predictionmodel.ReadRealtime import GetGenerationStatus,GetRealTimePowerSum,GetRealTimeStatus
 
-numbers = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24]
+numbers = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,
+           31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,
+           58,59,60,61,62]
 
 
 def train(x_train,y_train):
@@ -80,6 +82,8 @@ def FittingCurve():
     fz = PolynomialFeatures(degree=5)
     for number in numbers:
         dataset=Db2FittingData(number)
+        if len(dataset) == 0: continue
+        dataset = np.array(dataset)
         x=dataset[:,0]
         y=dataset[:,1]
         x = x.reshape(-1, 1)
@@ -111,13 +115,13 @@ def CalExpectPower(): #use realtime windspeed
     ExpectSum = 0
     UsableSum = 0
     Capacity = 0
-    GenerationStatus = GetGenerationStatus()
+    RunningStatus = GetRealTimeStatus()
     len1=len(ExpectPower)
-    len2=len(GenerationStatus)
+    len2=len(RunningStatus)
     len0=min(len1,len2)
     for i in range(len0):
         ExpectSum = ExpectSum + ExpectPower[i]
-        if GenerationStatus[i]['stopping']==1:
+        if RunningStatus[i] == 1:
             UsableSum = UsableSum + ExpectPower[i]
             Capacity = Capacity + 2000
 
@@ -160,6 +164,8 @@ def LongTerm_Predict_Naive(nowtime):
         powersum=0
         for number in numbers:
             powersum = powersum + regr[number].predict(wsp_5)
+        if powersum < 0:
+            powersum = 0
         y_predict.append(powersum)
 
     predict_time = nowtime + timedelta(minutes=15)

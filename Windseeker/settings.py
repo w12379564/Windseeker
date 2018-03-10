@@ -25,7 +25,7 @@ SECRET_KEY = '%-j)x1d-pnh9@+5a+lu5bblexy_il-$v^s%^o&mahx*n3qgqxm'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['127.0.0.1', 'localhost ', '115.159.6.94','192.168.1.112']
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost ', '115.159.6.94','192.168.1.106']
 
 
 # Application definition
@@ -78,9 +78,9 @@ WSGI_APPLICATION = 'Windseeker.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'Windseeker',
+        'NAME': 'Windseeker_Donghai',
         'USER': 'root',
-        'PASSWORD': 'mysql237',
+        'PASSWORD': 'donghai',
         'HOST': '127.0.0.1',
     }
 }

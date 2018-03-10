@@ -2,7 +2,7 @@ import numpy as np
 from predictionmodel.models import weathertest
 from django.db.models import Sum
 from datetime import datetime,timedelta
-from predictionmodel.models import HistoryData,WeatherData,RealTime_WindTower
+from predictionmodel.models import HistoryData,WeatherData,RealTime_Read,Config
 from django.db.models import Sum,Max
 
 def file2dataset(filename,size,shuffleornot):
@@ -79,7 +79,8 @@ def Db2ShortTermData(begtime,endtime):
 def Db2FittingData(number):
     qtest=HistoryData.objects.filter(no=number).values_list('windspeed').annotate(MaxPower=Max('power')).order_by('windspeed')
     #print(qtest.query)
-    return np.array(list(qtest))
+    ret = list(qtest)
+    return ret
 
 def Db2LongTermData(begtime,endtime):
     dataset = {'x_train': [], 'y_train': []}
@@ -164,6 +165,7 @@ def GetX_Predict_ShortTerm(nowtime):
 
 def Get_Realtime_WindSpeed():
     #70m windspeed avg
-    ret = RealTime_WindTower.objects.filter(DataID=10017).values_list('DataValue',flat=True)
+    ID = Config.objects.get(configname = '70m_windspeed_avg').DataID
+    ret = RealTime_Read.objects.filter(DataID=ID).values_list('DataValue',flat=True)
     ret = float(ret[0])
     return ret

@@ -28,7 +28,7 @@ class HistoryDataTest(models.Model):
 
 class Config(models.Model):
     DataID = models.IntegerField(primary_key=True)
-    configname = models.CharField(max_length=20)
+    configname = models.CharField(max_length=30)
 
 class HistoryData(models.Model):
     time = models.DateTimeField()
@@ -53,15 +53,7 @@ class PredictionResult_288points(models.Model):
     DataTime = models.DateTimeField(primary_key=True)
     DataValue = models.FloatField()
 
-class RealTime_WindTower(models.Model):
-    DataID = models.IntegerField(primary_key=True)
-    DataValue = models.FloatField()
-
-class RealTime_GenerationData(models.Model):
-    DataID = models.IntegerField(primary_key=True)
-    DataValue = models.FloatField()
-
-class RealTime_GenerationStatus(models.Model):
+class RealTime_Read(models.Model):
     DataID = models.IntegerField(primary_key=True)
     DataValue = models.FloatField()
 

@@ -19,14 +19,15 @@ from predictionmodel.prediction import ShortTerm_Train,ShortTerm_Predictts,Fitti
 from predictionmodel.models import HistoryData
 from django.db.models import Sum
 import numpy as np
-from predictionmodel.models import PredictionResult_16points,WeatherData,PredictionResult_288points
+from predictionmodel.models import PredictionResult_16points,WeatherData,PredictionResult_288points,RealTime_Read
 from predictionmodel.ReadRealtime import GetGenerationData,GetGenerationStatus,GetWindTower
 from predictionmodel.WriteRealtime import WriteExpect,WriteWindTower
 from predictionmodel.dataPreprocess import Get_Realtime_WindSpeed
 from predictionmodel.tasks import WindseekerTasks
-from predictionmodel.models import RealTime_GenerationData,RealTime_GenerationStatus,RealTime_WindTower,RealTime_Write
+from predictionmodel.models import RealTime_Write
 from predictionmodel.models import Config
-from predictionmodel.ReadRealtime import GetRealTimePowerSum
+from predictionmodel.ReadRealtime import GetRealTimePowerSum,GetRealTimeStatus,GetGenerationData
+from predictionmodel import Config_init
 # Create your tests here.
 
 def testGetdata():
@@ -219,24 +220,11 @@ def init_config_genstatus():
         r.save()
 
 def init_realtime():
-    for i in range(10001,10057):
-        r = RealTime_WindTower(DataID=i,DataValue=i)
-        r.save()
-
-    for i in range(20001,20241):
-        r = RealTime_GenerationData(DataID=i, DataValue=i)
-        r.save()
-
-    for i in range(30001,30121):
-        r = RealTime_GenerationStatus(DataID=i,DataValue=i)
-        r.save()
-
-    for i in range(40001,40019):
-        r = RealTime_Write(DataID=i,DataValue=i)
+    Items = Config.objects.all()
+    for item in Items:
+        r = RealTime_Read(DataID = item.DataID,DataValue = item.DataID)
         r.save()
 
 # Run here.
-begtime = datetime(year=2016, month=6, day=24, hour=19, minute=0)
-endtime = begtime + timedelta(days=10)
-nowtime = datetime(year=2016, month=12, day=30, hour=22, minute=0)
-init_config_genstatus()
+os.chdir('/home/donghai/project/Windseeker')
+FittingCurve()
