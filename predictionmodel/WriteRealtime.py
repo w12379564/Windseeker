@@ -9,7 +9,7 @@ def WriteDB_16points(predict_time,y_predict):
         if y_<0:
             y_ = 0
 
-        obj = PredictionResult_16points(DataTime = predict_time, DataValue = y_)
+        obj = PredictionResult_16points(DataTime = predict_time, DataValue = y_/1000)
         obj.save()
         predict_time = predict_time + timedelta(minutes=15)
 
@@ -19,7 +19,7 @@ def WriteDB_288points(predict_time,y_predict):
             obj = PredictionResult_288points.objects.get(DataTime=predict_time)
         except PredictionResult_288points.DoesNotExist:
             obj = PredictionResult_288points(DataTime = predict_time, DataValue = y_predict[0,i])
-        obj.DataValue = y_predict[0,i]
+        obj.DataValue = y_predict[0,i]/1000
         obj.save()
         predict_time = predict_time + timedelta(minutes=15)
 
@@ -30,16 +30,16 @@ def WriteDB_288points_Naive(predict_time,y_predict):
         if y_<0:
             y_ = 0
 
-        obj = PredictionResult_288points(DataTime = predict_time, DataValue = y_)
+        obj = PredictionResult_288points(DataTime = predict_time, DataValue = y_/1000)
         obj.save()
         predict_time = predict_time + timedelta(minutes=15)
 
 def WriteExpect(RealTimePowerSum,Capacity,ExpectSum, UsableSum, LimitSum):
-    RealTime_Write.objects.filter(DataID=40001).update(DataValue=RealTimePowerSum)
-    RealTime_Write.objects.filter(DataID=40002).update(DataValue=Capacity)
-    RealTime_Write.objects.filter(DataID=40003).update(DataValue=ExpectSum)
-    RealTime_Write.objects.filter(DataID=40004).update(DataValue=UsableSum)
-    RealTime_Write.objects.filter(DataID=40005).update(DataValue=LimitSum)
+    RealTime_Write.objects.filter(DataID=40001).update(DataValue=RealTimePowerSum/1000)
+    RealTime_Write.objects.filter(DataID=40002).update(DataValue=Capacity/1000)
+    RealTime_Write.objects.filter(DataID=40003).update(DataValue=ExpectSum/1000)
+    RealTime_Write.objects.filter(DataID=40004).update(DataValue=UsableSum/1000)
+    RealTime_Write.objects.filter(DataID=40005).update(DataValue=LimitSum/1000)
 
 def WriteWindTower():
     WindTowerInfo = GetWindTower()
