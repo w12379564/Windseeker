@@ -1,4 +1,4 @@
-from predictionmodel.models import PredictionResult_16points,PredictionResult_288points,RealTime_Write
+from predictionmodel.models import PredictionResult_16points,PredictionResult_288points,PredictionResult_16points1,PredictionResult_288points1,RealTime_Write
 from datetime import datetime,timedelta
 from predictionmodel.ReadRealtime import GetWindTower
 
@@ -10,6 +10,17 @@ def WriteDB_16points(predict_time,y_predict):
             y_ = 0
 
         obj = PredictionResult_16points(DataTime = predict_time, DataValue = y_/1000)
+        obj.save()
+        predict_time = predict_time + timedelta(minutes=15)
+
+def WriteDB_16points1(predict_time,y_predict):
+    PredictionResult_16points1.objects.filter(DataTime__gte = predict_time).delete()
+    for i in range(0,16):
+        y_ = y_predict[0,i]
+        if y_<0:
+            y_ = 0
+
+        obj = PredictionResult_16points1(DataTime = predict_time, DataValue = y_/1000)
         obj.save()
         predict_time = predict_time + timedelta(minutes=15)
 
@@ -31,6 +42,17 @@ def WriteDB_288points_Naive(predict_time,y_predict):
             y_ = 0
 
         obj = PredictionResult_288points(DataTime = predict_time, DataValue = y_/1000)
+        obj.save()
+        predict_time = predict_time + timedelta(minutes=15)
+
+def WriteDB_288points_Naive1(predict_time,y_predict):
+    PredictionResult_288points1.objects.filter(DataTime__gte=predict_time).delete()
+    for i in range(0,288):
+        y_ = y_predict[i]
+        if y_<0:
+            y_ = 0
+
+        obj = PredictionResult_288points1(DataTime = predict_time, DataValue = y_/1000)
         obj.save()
         predict_time = predict_time + timedelta(minutes=15)
 

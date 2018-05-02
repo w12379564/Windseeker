@@ -14,7 +14,7 @@ from datetime import datetime,timedelta
 import predictionmodel.getData
 from predictionmodel.tasks import predictTask,add,trainTask,getDataTask
 from celery.schedules import crontab
-from predictionmodel.dataPreprocess import Db2ShortTermData,Db2FittingData,Db2LongTermData,NetDB2Weather,GetX_Predict_LongTerm_Naive
+from predictionmodel.dataPreprocess import Db2ShortTermData,Db2FittingData,Db2LongTermData,NetDB2Weather,GetX_Predict_LongTerm_Naive,GetX_Predict_ShortTerm
 from predictionmodel.prediction import ShortTerm_Train,ShortTerm_Predictts,FittingCurve,CalExpectPower,ShortTerm_Predict,LongTerm_Train,LongTerm_Predict,LongTerm_Predict_Naive
 from predictionmodel.models import HistoryData
 from django.db.models import Sum
@@ -226,5 +226,5 @@ def init_realtime():
         r.save()
 
 # Run here.
-
-init_realtime()
+nowtime = datetime(2017,10,10)
+GetX_Predict_ShortTerm(nowtime)

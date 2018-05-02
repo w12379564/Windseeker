@@ -2,7 +2,7 @@ from predictionmodel.models import Config
 import pandas as pd
 
 def init_config_windtower():
-    df = pd.read_excel('/home/futuregadget013/donghai_config_windtower.xlsx')
+    df = pd.read_excel('/home/futuregadget013/beiyan_windtower.xlsx')
     df.columns = ['ID', 'description', 'unit', 'category', 'frequency']
     for row in df.itertuples():
         ID = int(row.ID)
@@ -24,18 +24,18 @@ def init_config_windtower():
 
 
 def init_config_generation():
-    df = pd.read_excel('/home/futuregadget013/donghai_config_generations.xlsx')
+    df = pd.read_excel('/home/futuregadget013/beiyan_generation.xlsx')
     df.columns = ['ID', 'description', 'unit', 'category', 'frequency']
     for row in df.itertuples():
         ID = int(row.ID)
         name = str(row.description)
-        name = name.replace('风机PLC状态', 'status')
+        name = name.replace('风机风机状态', 'status')
         name = name.replace('风机风速', 'windspeed')
-        name = name.replace('风机有功', 'power')
-        name = name.replace('风机无功', 'reactive power')
-        name = name.replace('风机电网电压1', 'voltage')
-        name = name.replace('风机电网电流1', 'current')
-        name = name.replace('风机频率', 'frequency')
+        name = name.replace('风机电网有功功率', 'power')
+        name = name.replace('风机电网无功功率', 'reactive power')
+        name = name.replace('风机电网A相电压', 'voltage')
+        name = name.replace('风机电网A相电流', 'current')
+        name = name.replace('风机电网频率', 'frequency')
 
         name = name.replace('风机状态', 'status')
         name = name.replace('风机瞬时风速', 'windspeed')

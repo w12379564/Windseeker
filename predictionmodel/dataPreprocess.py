@@ -147,11 +147,11 @@ def GetX_Predict_LongTerm_Naive(nowtime):
         ret = ret[-288:]
     return ret
 
-def GetX_Predict_ShortTerm(nowtime):
+def GetX_Predict_ShortTerm(nowtime,begno,endno):
     nowtime = datetime(year=nowtime.year, month=nowtime.month, day=nowtime.day,hour=nowtime.hour,minute=nowtime.minute)
     endtime = nowtime
     begtime = endtime - timedelta(hours=4)
-    x = HistoryData.objects.filter(time__gte=begtime).filter(time__lt=endtime).values_list('time').annotate(Power_Sum=Sum('power')).values_list('Power_Sum', flat=True).order_by('time')
+    x = HistoryData.objects.filter(no__gte=begno).filter(no__lte=endno).filter(time__gte=begtime).filter(time__lt=endtime).values_list('time').annotate(Power_Sum=Sum('power')).values_list('Power_Sum', flat=True).order_by('time')
     ret=list(x)
     while len(ret)<16:
         if len(ret)>0:

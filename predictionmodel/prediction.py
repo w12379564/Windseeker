@@ -9,7 +9,7 @@ import numpy as np
 from predictionmodel.models import HistoryData,PredictionResult_16points,PredictionResult_288points
 from django.db.models import Sum
 from sklearn.preprocessing import PolynomialFeatures
-from predictionmodel.WriteRealtime import WriteDB_16points,WriteDB_288points,WriteDB_288points_Naive,WriteExpect
+from predictionmodel.WriteRealtime import WriteDB_16points,WriteDB_288points,WriteDB_288points_Naive,WriteExpect,WriteDB_16points1,WriteDB_288points_Naive1
 from predictionmodel.ReadRealtime import GetGenerationStatus,GetRealTimePowerSum,GetRealTimeStatus
 
 numbers = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,
@@ -67,15 +67,29 @@ def ShortTerm_Predictts(endtime):
     return y_predict
 
 def ShortTerm_Predict(nowtime):
-    x = GetX_Predict_ShortTerm(nowtime)
+    b1 = 1
+    e1 = 34
+    b2 =35
+    e2 = 62
+
+    regr = joblib.load('predictionmodel/model/' + 'ShortTerm' + '.model')
+    predict_time = nowtime + timedelta(minutes=15)
+
+    x = GetX_Predict_ShortTerm(nowtime,b1,e1)
     x_predict = np.array(x)
     x_predict = x_predict.reshape(1,-1)
     #print(x_predict)
-    regr = joblib.load('predictionmodel/model/' + 'ShortTerm' + '.model')
     y_predict = regr.predict(x_predict)
     #print(y_predict)
-    predict_time = nowtime + timedelta(minutes=15)
     WriteDB_16points(predict_time, y_predict)
+
+    x1 = GetX_Predict_ShortTerm(nowtime,b2,e2)
+    x_predict1 = np.array(x1)
+    x_predict1 = x_predict1.reshape(1,-1)
+    #print(x_predict)
+    y_predict1 = regr.predict(x_predict1)
+    #print(y_predict)
+    WriteDB_16points1(predict_time, y_predict1)
 
 
 def FittingCurve():
@@ -159,15 +173,24 @@ def LongTerm_Predict_Naive(nowtime):
     for number in numbers:
         regr[number] = joblib.load('predictionmodel/model/FittingCurve/' + str(number) + '.model')
     y_predict = []
+    y_predict1 = []
     for wsp in x_predict:
         wsp_5 = fz.fit_transform(wsp)
-        powersum=0
+        powersum = 0
+        powersum1 = 0
         for number in numbers:
-            powersum = powersum + regr[number].predict(wsp_5)
+            if number < 35:
+                powersum = powersum + regr[number].predict(wsp_5)
+            else:
+                powersum1 = powersum1 + regr[number].predict(wsp_5)
         if powersum < 0:
             powersum = 0
+        if powersum1 < 0:
+            powersum1 = 0
         y_predict.append(powersum)
+        y_predict1.append(powersum1)
 
     predict_time = nowtime + timedelta(minutes=15)
     WriteDB_288points_Naive(predict_time, y_predict)
+    WriteDB_288points_Naive1(predict_time, y_predict1)
 
