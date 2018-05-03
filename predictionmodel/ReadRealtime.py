@@ -25,12 +25,12 @@ def GetRealTimeStatus():
     RunningStatus = []
     #RtItems = RealTime_GenerationData.objects.filter(DataID__gte=20001).filter(DataID__lte=20240)
     for no in range(1, GenerationNumber + 1):
-        power_id = Config.objects.get(configname=str(no) + '#power').DataID
-        power = RealTime_Read.objects.get(DataID=power_id).DataValue
-        if power > 0:
-            RunningStatus.append(1)
-        else:
+        status_id = Config.objects.get(configname=str(no) + '#status').DataID
+        status = RealTime_Read.objects.get(DataID=status_id).DataValue
+        if status == 1:
             RunningStatus.append(0)
+        else:
+            RunningStatus.append(1)
     return RunningStatus
 
 def GetRealTimePowerSum():
