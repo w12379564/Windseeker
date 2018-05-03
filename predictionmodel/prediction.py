@@ -13,7 +13,7 @@ from predictionmodel.WriteRealtime import WriteDB_16points,WriteDB_288points,Wri
 from predictionmodel.ReadRealtime import GetGenerationStatus,GetRealTimePowerSum,GetRealTimeStatus
 
 numbers = [1,2,3,4,5,6,7,8,9,10,11]
-
+C0=1500
 
 def train(x_train,y_train):
     ESTIMATORS = {
@@ -103,7 +103,7 @@ def CalExpectPower(): #use realtime windspeed
         if windspeed <= 3:
             ExpectPower.append(0)
         elif windspeed >=12:
-            ExpectPower.append(2000)
+            ExpectPower.append(C0)
         else:
             if y_expect[0,0]>0:
                 ExpectPower.append(y_expect[0,0])
@@ -121,7 +121,7 @@ def CalExpectPower(): #use realtime windspeed
         ExpectSum = ExpectSum + ExpectPower[i]
         if RunningStatus[i] == 1:
             UsableSum = UsableSum + ExpectPower[i]
-            Capacity = Capacity + 1500
+            Capacity = Capacity + C0
 
     LimitSum = ExpectSum - UsableSum
     RealTimePowerSum = GetRealTimePowerSum()
