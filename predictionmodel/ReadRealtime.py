@@ -4,7 +4,7 @@ from datetime import datetime
 from django.db.models import Q
 
 #Generation number
-GenerationNumber = 11
+GenerationNumber = 13
 
 def GetGenerationData(nowtime):
     InsertTime = datetime(year=nowtime.year,month=nowtime.month,day=nowtime.day,hour=nowtime.hour,minute=nowtime.minute)

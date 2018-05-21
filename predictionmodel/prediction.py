@@ -12,7 +12,7 @@ from sklearn.preprocessing import PolynomialFeatures
 from predictionmodel.WriteRealtime import WriteDB_16points,WriteDB_288points,WriteDB_288points_Naive,WriteExpect
 from predictionmodel.ReadRealtime import GetGenerationStatus,GetRealTimePowerSum,GetRealTimeStatus
 
-numbers = [1,2,3,4,5,6,7,8,9,10,11]
+numbers = [1,2,3,4,5,6,7,8,9,10,11,12,13]
 C0=1500
 
 def train(x_train,y_train):

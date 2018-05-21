@@ -4,5 +4,5 @@ import os
 
 class Command(BaseCommand):
     def handle(self, *args, **options):
-        os.chdir('/home/nanhui/project/Windseeker')
+        os.chdir('/home/dongtan/project/Windseeker')
         WindseekerTasks()
