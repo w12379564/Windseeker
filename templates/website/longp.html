@@ -1,0 +1,108 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+
+		{%block longp_active%}
+		active
+		{%endblock longp_active%}
+
+		<!-- MAIN -->
+		{% block main %}
+		<div class="main">
+			<!-- MAIN CONTENT -->
+			<div class="main-content">
+				<div class="container-fluid">
+					<h3 class="page-title">图表</h3>
+					<form>
+					起始时间：<input id="datetimepicker-beg" type="text" >
+					结束时间：<input id="datetimepicker-end" type="text" >
+					<button type="button" class="btn btn-default" id="search">查询</button>
+					</form>
+					<div class="row">
+						<div class="col-md-12">
+							<div class="panel">
+								<div class="panel-heading">
+									<h3 class="panel-title">折线图</h3>
+								</div>
+
+								<div class="panel-body">
+									<div id="container" style="max-width:800px;height:400px"></div>
+
+									<table id="dt1" class="table">
+									</table>
+
+								</div>
+							</div>
+						</div>
+
+					</div>
+
+				</div>
+			</div>
+			<!-- END MAIN CONTENT -->
+
+		</div>
+		{% endblock main %}
+		<!-- END MAIN -->
+	{% block function %}
+	<script>
+	$(function() {
+
+		$("#search").click(function(){
+			var begtime = $("#datetimepicker-beg").val();
+			var endtime = $("#datetimepicker-end").val();
+			console.log(begtime)
+			console.log(endtime)
+			$.getJSON("{% url 'get288p_ajax' %}",{'beg':begtime,'end':endtime},function(ret){
+				var chart = Highcharts.chart('container', {
+		title: {
+				text: '短期风功率预测结果'
+		},
+
+		yAxis: {
+				title: {
+						text: '功率/MW'
+				}
+		},
+		legend: {
+				layout: 'vertical',
+				align: 'right',
+				verticalAlign: 'middle'
+		},
+		plotOptions: {
+				series: {
+						label: {
+								connectorAllowed: false
+						},
+						pointStart: 2010
+				}
+		},
+		series: ret,
+		responsive: {
+				rules: [{
+						condition: {
+								maxWidth: 500
+						},
+						chartOptions: {
+								legend: {
+										layout: 'horizontal',
+										align: 'center',
+										verticalAlign: 'bottom'
+								}
+						}
+				}]
+		}
+});
+
+			});
+			//console.log(dt.data());
+		});
+
+		
+		$.datetimepicker.setLocale('ch');
+		$('#datetimepicker-beg').datetimepicker();
+		$('#datetimepicker-end').datetimepicker();
+
+
+	});
+	</script>
+	{% endblock function %}

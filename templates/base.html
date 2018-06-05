@@ -23,6 +23,15 @@
 	<!-- ICONS -->
 	<link rel="apple-touch-icon" sizes="76x76" href="{% static 'website/assets/img/apple-icon.png' %}">
 	<link rel="icon" type="image/png" sizes="96x96" href="{% static 'website/assets/img/favicon.png' %}">
+
+	<script src="https://img.hcharts.cn/jquery/jquery-1.8.3.min.js"></script>
+	<script src="https://img.hcharts.cn/highcharts/highcharts.js"></script>
+	<script src="https://img.hcharts.cn/highcharts/modules/exporting.js"></script>
+	<script src="https://img.hcharts.cn/highcharts/modules/data.js"></script>
+	<script src="https://img.hcharts.cn/highcharts/modules/series-label.js"></script>
+	<script src="https://img.hcharts.cn/highcharts/modules/oldie.js"></script>
+	<script src="https://img.hcharts.cn/highcharts-plugins/highcharts-zh_CN.js"></script>
+
 </head>
 
 <body>
@@ -94,9 +103,9 @@
 						<li><a href="index.html" class={%block index_active%}{%endblock index_active%}><i class="lnr lnr-home"></i> <span>总览</span></a></li>
 						<li><a href="tables.html" class={%block tables_active%}{%endblock tables_active%}><i class="lnr lnr-dice"></i> <span>数据表格</span></a></li>
 						<li><a href="charts.html" class={%block charts_active%}{%endblock charts_active%}><i class="lnr lnr-chart-bars"></i> <span>功率曲线</span></a></li>
-						
-
-						
+						<li><a href="shortp.html" class={%block shortp_active%}{%endblock shortp_active%}><i class="lnr lnr-chart-bars"></i> <span>超短期功率曲线</span></a></li>
+						<li><a href="longp.html" class={%block longp_active%}{%endblock longp_active%}><i class="lnr lnr-chart-bars"></i> <span>短期功率曲线</span></a></li>
+											
 					</ul>
 				</nav>
 			</div>

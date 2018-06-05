@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from django.http import JsonResponse
 from datetime import datetime
-from predictionmodel.dataQuery import getrealBytime,getpredictBytime
+from predictionmodel.dataQuery import getrealBytime,getpredictBytime,get16p,getHistory,get288p
 from predictionmodel.tasks import predictTask,getDataTask
 from predictionmodel.excel2db import read_xlsx1
 
@@ -46,3 +46,39 @@ def upload_history(request):
         if myFile!=None:
             read_xlsx1(myFile)
     return JsonResponse("upload over", safe=False)
+
+def shortp(request):
+    return render(request, 'website/shortp.html')
+
+def get16p_ajax(request):
+    beg=request.GET.get('beg',0)
+    end=request.GET.get('end',0)
+    begtime = datetime.strptime(beg,'%Y/%m/%d %H:%M')
+    endtime = datetime.strptime(end,'%Y/%m/%d %H:%M')
+    print(begtime)
+    print(endtime)
+    ret = []
+
+    ret.append({'name':'预测值','data':get16p(begtime,endtime)})
+    ret.append({'name':'实际值','data':getHistory(begtime,endtime)})
+
+    print(ret)
+    return JsonResponse(ret,safe=False)
+
+def longp(request):
+    return render(request, 'website/longp.html')
+
+def get288p_ajax(request):
+    beg=request.GET.get('beg',0)
+    end=request.GET.get('end',0)
+    begtime = datetime.strptime(beg,'%Y/%m/%d %H:%M')
+    endtime = datetime.strptime(end,'%Y/%m/%d %H:%M')
+    print(begtime)
+    print(endtime)
+    ret = []
+
+    ret.append({'name':'预测值','data':get288p(begtime,endtime)})
+    ret.append({'name':'实际值','data':getHistory(begtime,endtime)})
+
+    print(ret)
+    return JsonResponse(ret,safe=False)
